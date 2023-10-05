@@ -1,2 +1,8 @@
 Ideas & Methods:
 https://www.zenrows.com/blog/web-scraping-project-ideas#influencer-database
+
+Scrapy for web scraping:
+https://www.freecodecamp.org/news/use-scrapy-for-web-scraping-in-python/
+
+NLP: 
+https://www.projectpro.io/article/nlp-projects-ideas-/452#mcetoc_1fb65p3aq2k
