@@ -9,3 +9,9 @@ https://www.projectpro.io/article/nlp-projects-ideas-/452#mcetoc_1fb65p3aq2k
 
 Youtube Tutorial:
 https://www.youtube.com/watch?v=d4iz2NrZVRg
+
+Rotating Proxies:
+https://github.com/nabinkhadka/rotating-free-proxies
+
+tutorial on indeed:
+https://www.youtube.com/watch?v=HOS5Hix--bE
