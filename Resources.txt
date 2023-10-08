@@ -15,3 +15,6 @@ https://github.com/nabinkhadka/rotating-free-proxies
 
 tutorial on indeed:
 https://www.youtube.com/watch?v=HOS5Hix--bE
+
+Indeed 2023:
+https://github.com/MrFuguDataScience/Webscraping/blob/master/July_2023_Indeed_Webscrape_Selenium.ipynb
