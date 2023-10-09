@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import time
 from time import sleep
 from random import randint
+import re 
 import math
 from datetime import datetime, timedelta
 from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors
@@ -74,15 +75,19 @@ def glassdoor_driver_goto_wait():
     return driver
 
 def glassdoor_return_time(job_date):
+    date_of_job = None
+    now = datetime.now()
     if job_date[-1:] == 'd':
-        now = datetime.now()
         date_of_job = now - timedelta(days=int(job_date[:-1]))
-        date_of_job = date_of_job.strftime("%d-%m-%Y")
     elif job_date[-1:] == 'h':
-        now = datetime.now()
         date_of_job = now - timedelta(days=1)
-        date_of_job = date_of_job.strftime("%d-%m-%Y")
+    date_of_job = date_of_job.strftime("%d-%m-%Y")
     return date_of_job
+
+def glassdoor_clean_company_name(name):
+    result = re.split(r'(\d)', name, 1)
+    result
+    return result[0]
 
 def glassdoor_fetch_job_info(driver):
     titles    = glassdoor_get_text_values_by_class(glassdoor_classes.CLASS_JOB_TITLE.value, driver)
