@@ -1,4 +1,3 @@
-from main import job_data_get
 from requests_html import HTMLSession
 from time import sleep
 
