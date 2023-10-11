@@ -1,4 +1,4 @@
-from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors, linkedin_url
+from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors, linkedin_url, linkedin_xpaths, linkedin_attributes
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
@@ -177,7 +177,7 @@ def glassdoor_get_all_postings_df(driver):
     for job in listings:
         titles, companies, locations, salaries, job_links, date = glassdoor_fetch_job_info(job)
         data = {'title': titles, 'company': companies, 'location': locations,
-                'link': job_links, 'salary': salaries, 'date': date}
+                'link': job_links, 'salary': salaries, 'posting_date': date}
         data_list.append(data)
     df = pd.DataFrame(data_list)
     return df
@@ -200,17 +200,44 @@ def linkedin_html_session():
 def linkedin_get_page(session, url=linkedin_url.url.value):
     page = session.get(url)
     return page
-
-def linkedin_return_all_elements_by_xpath(xpath, session,attr=False,attribute_name=None):
-    items_list = []
+def linkedin_return_all_elements_by_xpath(xpath, session, attr=False, attribute_name=None):
     items = session.html.xpath(xpath)
-    if not attr:
-        for item in items:
-            items_list.append(item.text)
-    elif attr:
-        for item in items:
-            items_list.append(item.attrs[attribute_name])
+    if items:
+        if attr:
+            items_list = [item.attrs.get(attribute_name, 'N/A') for item in items]
+        else:
+            items_list = [item.text for item in items]
+    else:
+        items_list = 'N/A'
+    
     return items_list
 
-def return_all_elements_as_df():
-    pass
+def linkedin_get_text_value(parent_element,css_selector):
+    value = parent_element.find(css_selector)[0].text
+    return value
+
+def linkedin_job_id_extract(x):
+    id = x.split('?refId')[0].split('-')[-1]
+    id = int(id)
+    return id
+
+def linkedin_return_all_elements_as_df(page):
+
+    titles = linkedin_return_all_elements_by_xpath(linkedin_xpaths.JOB_TITLE.value, page)
+    companies = linkedin_return_all_elements_by_xpath(linkedin_xpaths.COMPANIES.value, page)
+    locations = linkedin_return_all_elements_by_xpath(linkedin_xpaths.LOCATIONS.value, page)
+    links = linkedin_return_all_elements_by_xpath(linkedin_xpaths.LINKS.value, page, attr=True, attribute_name=linkedin_attributes.HREF.value)
+    times = linkedin_return_all_elements_by_xpath(linkedin_xpaths.POSTING_TIME.value, page, attr=True, attribute_name=linkedin_attributes.DATETIME.value)
+
+    return titles, companies, locations, links, times
+
+def linkedin_id_order(df):
+
+    df['ID'] = df['link'].apply(linkedin_job_id_extract)
+    order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
+    df['source'] = 'LinkedIn'
+
+    return df
+
+def linkedin_wait():
+    sleep(randint(2,4))

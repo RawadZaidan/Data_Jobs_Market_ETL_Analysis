@@ -18,8 +18,8 @@ class glassdoor_classes(Enum):
 class TAGS(Enum):
     LI = 'li'
 
-class GLASSDOOR_DF(Enum):
-    BOARD_COLUMNS_LIST = ['title','company','location','link','salary']
+# class GLASSDOOR_DF(Enum):
+#     BOARD_COLUMNS_LIST = ['title','company','location','link','salary']
 
 class glassdoor_css_selectors(Enum):
     LI_JOBS_LIST = 'li.JobsList_jobListItem__JBBUV'
@@ -36,5 +36,8 @@ class linkedin_attributes(Enum):
     HREF = 'href'
     DATETIME = 'datetime'
 
+class LINKEDIN_DF_COLUMNS(Enum):
+        COLUMNS_LIST = ['title','company','location','link','posting_date']
+
 class linkedin_url(Enum):
-    url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=data%2Bengineer&location=United%2BStates&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&start=0'
+    url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Data%2BAnalyst&location=Worldwide&locationId=&geoId=92000000&f_TPR=r86400&start='
