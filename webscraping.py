@@ -1,14 +1,16 @@
-from selenium import webdriver
+from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors, linkedin_url
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-import time
-from time import sleep
-from random import randint
-import re 
-import math
 from datetime import datetime, timedelta
-from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors
+from requests_html import HTMLSession
+from selenium import webdriver
+from random import randint
+from time import sleep
+import pandas as pd
+import math
+import time
+import re 
 # from bs4 import BeautifulSoup
 # from lxml import etree as et
 # from csv import writer
@@ -89,6 +91,23 @@ def glassdoor_clean_company_name(name):
     result
     return result[0]
 
+def glassdoor_return_number_next_buttons(driver):
+    nb_of_jobs = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_NUMBER_OF_ELEMENTS.value).text
+    nb_of_jobs = int(nb_of_jobs.split()[0])
+    skips = int(math.ceil(nb_of_jobs/20))-1
+    return skips
+
+def glassdoor_find_next_page_button(driver):
+    nextpage = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_NEXT_PAGE.value)
+    return nextpage
+
+def glassdoor_find_exit_login_button(driver):
+    exit = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_EXIT_LOGIN.value)
+    return exit
+
+def glassdoor_click(button_element):
+    button_element.click()
+
 def glassdoor_fetch_job_info(driver):
     titles    = glassdoor_get_text_values_by_class(glassdoor_classes.CLASS_JOB_TITLE.value, driver)
     companies = glassdoor_get_text_values_by_class(glassdoor_classes.CLASS_JOB_COMPANY_NAME.value, driver)
@@ -97,3 +116,101 @@ def glassdoor_fetch_job_info(driver):
     job_links = glassdoor_get_href_by_class(glassdoor_classes.CLASS_JOB_TITLE.value, driver)
     date      = glassdoor_get_elements_by_css(glassdoor_css_selectors.LI_JOB_DATE.value, driver, text=True)
     return titles, companies, locations, salaries, job_links, date
+
+def glassdoor_scroll_to_bottom(driver):
+    while True:
+        try:
+            try:
+                glassdoor_wait()
+                exit = glassdoor_find_exit_login_button(driver)
+                glassdoor_click(exit)
+            except:
+                next = glassdoor_find_next_page_button(driver)
+                glassdoor_click(next)
+                glassdoor_wait()
+        except:
+            break
+    print('Done scrolling pages')
+
+def glassdoor_return_yearly_lower(l):
+
+    m = l.split('(')
+    m = m[0].split(' ')[:3]
+    if m[0][-1].lower() == 'k':
+        return m[0]
+    elif m[0][-1].isdigit():
+        try:
+            price = int((float(m[0][1:])*40*4*12)/1000)
+            m = '$'+str(price)+'K'
+            return m
+        except Exception as e:
+            return 'ERROR'
+    else:
+        pass
+def glassdoor_return_yearly_higher(l):
+
+    m = l.split('(')
+    m = m[0].split(' ')[:3]
+    if m[0][-1].lower() == 'k':
+        return m[-1]
+    elif m[0][-1].isdigit():
+        try:
+            price = int((float(m[2][1:])*40*4*12)/1000)
+            m = '$'+str(price)+'K'
+            return m
+        except Exception as e:
+            return 'ERROR'
+    else:
+        pass
+
+def glassdoor_cleaning_functions(df):
+    df = df.applymap(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
+    df['date'] = df['date'].apply(glassdoor_return_time)
+    df['company'] = df['company'].apply(glassdoor_clean_company_name)
+    df['Yearly_Min'] = df['salary'].apply(glassdoor_return_yearly_lower)
+    df['Yearly_Max'] = df['salary'].apply(glassdoor_return_yearly_higher)
+    return df
+
+def glassdoor_get_all_postings_df(driver):
+    data_list = []
+    listings = glassdoor_get_elements_by_css(glassdoor_css_selectors.LI_JOBS_LIST.value, driver)
+    for job in listings:
+        titles, companies, locations, salaries, job_links, date = glassdoor_fetch_job_info(job)
+        data = {'title': titles, 'company': companies, 'location': locations,
+                'link': job_links, 'salary': salaries, 'date': date}
+        data_list.append(data)
+    df = pd.DataFrame(data_list)
+    return df
+
+def glassdoor_final_df():
+
+    driver = glassdoor_driver_goto_wait()
+    glassdoor_scroll_to_bottom(driver)
+    unclean_df = glassdoor_get_all_postings_df(driver)
+    df = glassdoor_cleaning_functions(unclean_df)
+
+    return df
+#####################################################################################
+# LinkedIn functions:
+
+def linkedin_html_session():
+    session = HTMLSession()
+    return session
+
+def linkedin_get_page(session, url=linkedin_url.url.value):
+    page = session.get(url)
+    return page
+
+def linkedin_return_all_elements_by_xpath(xpath, session,attr=False,attribute_name=None):
+    items_list = []
+    items = session.html.xpath(xpath)
+    if not attr:
+        for item in items:
+            items_list.append(item.text)
+    elif attr:
+        for item in items:
+            items_list.append(item.attrs[attribute_name])
+    return items_list
+
+def return_all_elements_as_df():
+    pass
