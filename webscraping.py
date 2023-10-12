@@ -1,4 +1,4 @@
-from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors, linkedin_url, linkedin_xpaths, linkedin_attributes
+from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors, linkedin_url, linkedin_xpaths, linkedin_attributes, nakuri_url
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
@@ -22,7 +22,7 @@ import re
 # from selenium.webdriver.support import expected_conditions as EC
 # from selenium.webdriver.common.keys import Keys
 # from selenium.common.exceptions import NoSuchElementException
-
+#------------------------------------------------------------------------------------#
 # Glassdoor functions
 
 def glassdoor_driver():
@@ -200,7 +200,7 @@ def glassdoor_final_df():
     df['source'] = 'Glassdoor'
 
     return df
-#####################################################################################
+#------------------------------------------------------------------------------------#
 # LinkedIn functions:
 
 def linkedin_html_session():
@@ -297,5 +297,213 @@ def linkedin_final_df():
 
     df = linkedin_fetch_df()
     df = linkedin_id_order(df)
+
+    return df
+
+#------------------------------------------------------------------------------------#
+# NakuriGulf functions 
+
+
+def nakuri_driver():
+    option= webdriver.ChromeOptions()
+    option.add_argument('--incognito')
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),
+                         options=option)
+    return driver
+
+def nakuri_quit_driver(driver):
+    driver.quit()
+
+def nakuri_page_go_to(driver, url=nakuri_url.url.value):
+    driver.get(url)
+
+def nakuri_wait():
+    sleep(randint(3, 6))
+
+# def glassdoor_get_num_of_jobs(driver):
+#     num_of_jobs = driver.find_element(By.XPATH,
+#                                       glassdoor_xpaths.XPATH_NUMBER_OF_ELEMENTS.value).text
+#     return num_of_jobs
+
+def nakuri_get_text_values_by_class(class_name,driver):
+    values_list=[]
+    text_values = driver.find_elements(By.CLASS_NAME,class_name)
+    for val in text_values:
+        values_list.append(val.text)
+    return values_list[0]
+
+def nakuri_get_href_by_class(class_name,driver):
+    values_list = []
+    href_values = driver.find_elements(By.CLASS_NAME,class_name)
+    for val in href_values:
+        values_list.append(val.get_attribute('href'))
+    return values_list[0]
+
+def nakuri_get_elements_by_css(css_selector,driver, text=False):
+    items = []
+    elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
+    if text==True:
+        for el in elements:
+            items.append(el.text)
+        return items
+    else:
+        return elements
+
+def nakuri_driver_goto_wait():
+    driver = nakuri_driver()
+    nakuri_page_go_to(driver)
+    nakuri_wait()
+    return driver
+
+def nakuri_get_date(t):
+    current_date = datetime.now()
+    t = t.split(' ')
+    if len(t)>2:
+        t = t[-3:]
+        if t[0] == 'on':
+            day = int(t[1])
+            month_name = t[2]
+            month_dict = {
+                'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+                'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+            }
+            month = month_dict.get(month_name, 1)
+            year = current_date.year
+            date_o = str(day)+'-'+str(month)+'-'+str(year)
+            return date_o
+
+        elif t[2] == 'ago':
+            days_ago = int(t[0])
+            date_o = current_date - timedelta(days=days_ago)
+            date_o = date_o.strftime("%d-%m-%Y")
+            return date_o
+    elif len(t) == 2:
+        if t[-1] == 'Today':
+            date_o = current_date.strftime("%d-%m-%Y")
+            return date_o
+        else:
+            return 'ERROR'
+        
+def nakuri_get_time(job):
+    time = nakuri_get_elements_by_css('span.time',job)[0].text
+    clean_date = nakuri_get_date(time)
+    return clean_date
+
+def nakuri_location(job):
+    location_ = nakuri_get_elements_by_css('li.info-loc', job)
+    location = location_[0].text
+    return location
+
+def glassdoor_clean_company_name(name):
+    result = re.split(r'(\d)', name, 1)
+    result
+    return result[0]
+
+def glassdoor_return_number_next_buttons(driver):
+    nb_of_jobs = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_NUMBER_OF_ELEMENTS.value).text
+    nb_of_jobs = int(nb_of_jobs.split()[0])
+    skips = int(math.ceil(nb_of_jobs/20))-1
+    return skips
+
+def glassdoor_find_next_page_button(driver):
+    nextpage = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_NEXT_PAGE.value)
+    return nextpage
+
+def glassdoor_find_exit_login_button(driver):
+    exit = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_EXIT_LOGIN.value)
+    return exit
+
+def glassdoor_click(button_element):
+    button_element.click()
+
+def nakuri_fetch_job_info(driver):
+    titles    = nakuri_get_text_values_by_class('designation-title',driver)
+    companies = nakuri_get_text_values_by_class('info-org ',driver)
+    locations = nakuri_location(driver)
+    job_links = nakuri_get_href_by_class('info-position', driver)
+    date      = nakuri_get_time(driver)
+    return titles, companies, locations,  job_links, date
+
+def glassdoor_scroll_to_bottom(driver):
+    while True:
+        try:
+            try:
+                glassdoor_wait()
+                exit = glassdoor_find_exit_login_button(driver)
+                glassdoor_click(exit)
+                glassdoor_wait()
+            except:
+                glassdoor_wait()
+                next = glassdoor_find_next_page_button(driver)
+                glassdoor_click(next)
+                glassdoor_wait()
+        except:
+            break
+    print('Done scrolling pages')
+
+def glassdoor_return_yearly_lower(l):
+
+    m = l.split('(')
+    m = m[0].split(' ')[:3]
+    if m[0][-1].lower() == 'k':
+        return m[0]
+    elif m[0][-1].isdigit():
+        try:
+            price = int((float(m[0][1:])*40*4*12)/1000)
+            m = '$'+str(price)+'K'
+            return m
+        except Exception as e:
+            return 'ERROR'
+    else:
+        pass
+def glassdoor_return_yearly_higher(l):
+
+    m = l.split('(')
+    m = m[0].split(' ')[:3]
+    if m[0][-1].lower() == 'k':
+        return m[-1]
+    elif m[0][-1].isdigit():
+        try:
+            price = int((float(m[2][1:])*40*4*12)/1000)
+            m = '$'+str(price)+'K'
+            return m
+        except Exception as e:
+            return 'ERROR'
+    else:
+        pass
+
+def glassdoor_get_id(x):
+    id = x.split('=')[-1]
+    return id
+
+def glassdoor_cleaning_functions(df):
+    df = df.applymap(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
+    df['posting_date'] = df['posting_date'].apply(glassdoor_return_time)
+    df['company'] = df['company'].apply(glassdoor_clean_company_name)
+    df['Yearly_Min'] = df['salary'].apply(glassdoor_return_yearly_lower)
+    df['Yearly_Max'] = df['salary'].apply(glassdoor_return_yearly_higher)
+    df['ID'] = df['link'].apply(glassdoor_get_id)
+    return df
+
+def nakuri_get_all_postings_df(driver):
+    data_list = []
+    listings = nakuri_get_elements_by_css('div.ng-box.srp-tuple', driver)
+    for job in listings:
+        titles, companies, locations, job_links, date = nakuri_fetch_job_info(job)
+        data = {'title': titles, 'company': companies, 'location': locations,
+                'link': job_links, 'posting_date': date}
+        data_list.append(data)
+    df = pd.DataFrame(data_list)
+    return df
+
+def glassdoor_final_df():
+
+    driver = glassdoor_driver_goto_wait()
+    glassdoor_scroll_to_bottom(driver)
+    unclean_df = glassdoor_get_all_postings_df(driver)
+    df = glassdoor_cleaning_functions(unclean_df)
+    order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
+    df = df[order]
+    df['source'] = 'Glassdoor'
 
     return df

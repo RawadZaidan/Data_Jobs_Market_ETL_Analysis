@@ -25,6 +25,8 @@ class glassdoor_css_selectors(Enum):
     LI_JOBS_LIST = 'li.JobsList_jobListItem__JBBUV'
     LI_JOB_DATE = '[data-test="job-age"]'
 
+#------------------------------------------------------------------------#
+
 class linkedin_xpaths(Enum):
     JOB_TITLE = '//h3[@class = "base-search-card__title"]'
     COMPANIES = '//a[@class = "hidden-nested-link"]'
@@ -41,3 +43,8 @@ class LINKEDIN_DF_COLUMNS(Enum):
 
 class linkedin_url(Enum):
     url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Data%2BAnalyst&location=Worldwide&locationId=&geoId=92000000&f_TPR=r86400&start='
+
+#------------------------------------------------------------------------#
+
+class nakuri_url(Enum):
+    url = 'https://www.naukrigulf.com/data-engineer-jobs-'
