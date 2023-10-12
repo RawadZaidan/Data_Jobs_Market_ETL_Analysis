@@ -6,7 +6,7 @@ class glassdoor(Enum):
 class glassdoor_xpaths(Enum):
     XPATH_NUMBER_OF_ELEMENTS = '//*[@id="left-column"]/div[1]/h1'
     XPATH_NEXT_PAGE = '//*[@id="left-column"]/div[2]/div/button'
-    XPATH_EXIT_LOGIN = '//*[@id="LoginModal"]/div/div/div/div[2]/button'
+    XPATH_EXIT_LOGIN = '/html/body/div[11]/div[2]/div[1]/button'
     
 class glassdoor_classes(Enum):
     CLASS_JOB_TITLE        = 'css-1nh9iuj'

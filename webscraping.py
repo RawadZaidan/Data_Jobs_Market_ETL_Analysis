@@ -124,7 +124,9 @@ def glassdoor_scroll_to_bottom(driver):
                 glassdoor_wait()
                 exit = glassdoor_find_exit_login_button(driver)
                 glassdoor_click(exit)
+                glassdoor_wait()
             except:
+                glassdoor_wait()
                 next = glassdoor_find_next_page_button(driver)
                 glassdoor_click(next)
                 glassdoor_wait()
@@ -163,12 +165,17 @@ def glassdoor_return_yearly_higher(l):
     else:
         pass
 
+def glassdoor_get_id(x):
+    id = x.split('=')[-1]
+    return id
+
 def glassdoor_cleaning_functions(df):
     df = df.applymap(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
-    df['date'] = df['date'].apply(glassdoor_return_time)
+    df['posting_date'] = df['posting_date'].apply(glassdoor_return_time)
     df['company'] = df['company'].apply(glassdoor_clean_company_name)
     df['Yearly_Min'] = df['salary'].apply(glassdoor_return_yearly_lower)
     df['Yearly_Max'] = df['salary'].apply(glassdoor_return_yearly_higher)
+    df['ID'] = df['link'].apply(glassdoor_get_id)
     return df
 
 def glassdoor_get_all_postings_df(driver):
@@ -188,6 +195,9 @@ def glassdoor_final_df():
     glassdoor_scroll_to_bottom(driver)
     unclean_df = glassdoor_get_all_postings_df(driver)
     df = glassdoor_cleaning_functions(unclean_df)
+    order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
+    df = df[order]
+    df['source'] = 'Glassdoor'
 
     return df
 #####################################################################################
@@ -200,6 +210,10 @@ def linkedin_html_session():
 def linkedin_get_page(session, url=linkedin_url.url.value):
     page = session.get(url)
     return page
+
+def linkedin_wait():
+    sleep(randint(2,4))
+
 def linkedin_return_all_elements_by_xpath(xpath, session, attr=False, attribute_name=None):
     items = session.html.xpath(xpath)
     if items:
@@ -235,9 +249,53 @@ def linkedin_id_order(df):
 
     df['ID'] = df['link'].apply(linkedin_job_id_extract)
     order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
+    df = df[order]
     df['source'] = 'LinkedIn'
 
     return df
 
-def linkedin_wait():
-    sleep(randint(2,4))
+def linkedin_fetch_df():
+    session = HTMLSession()
+
+    dff = pd.DataFrame()
+    data_list = []
+    countries = ['Worldwide','France', 'Germany', 'United%20Kingdom', 'United%20States', 'Canada']
+    titles = [ 'Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
+    for title in titles:
+        for country in countries:
+            for counter in range(0, 50 ,25):
+                try:
+                    url = f'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={title}&location={country}'
+                    url = url + f'&locationId=&f_TPR=r86400&start={counter}'
+                    print('Now on page: ', counter)
+                    page = linkedin_get_page(session, url=url)
+                    # Use Requests-HTML functions to scrape data from the page
+                    items = page.html.xpath('//li')
+                    if len(items) == 0:
+                        break
+                    for li in items:
+                        titles = li.find('h3')[0].text
+                        companies = li.find('a.hidden-nested-link')[0].text
+                        locations = li.find('span.job-search-card__location')[0].text
+                        links = li.find('a.base-card__full-link')[0].attrs['href']
+                        time = li.find('time')[0].attrs['datetime']
+
+                        data = {'title': titles, 'company': companies, 'location': locations,
+                                'link': links, 'posting_date': time}
+
+                        data_list.append(data)
+
+                    counter += 25
+                except:
+                    pass
+                
+    df = pd.DataFrame(data_list)
+    dff = pd.concat([dff,df], ignore_index=True)
+    return dff
+
+def linkedin_final_df():
+
+    df = linkedin_fetch_df()
+    df = linkedin_id_order(df)
+
+    return df
