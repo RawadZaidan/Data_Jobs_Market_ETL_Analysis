@@ -53,6 +53,9 @@ class glassdoor_classes(Enum):
     CLASS_JOB_SALARY       = 'salary-estimate'
     CLASS_JOB_DATE         = 'd-flex'
 
+class ORDERED_DF(Enum):
+    list_ordered_columns = ['ID', 'title', 'company', 'location', 'posting_date', 'link', 'source']
+
 class TAGS(Enum):
     LI = 'li'
 
