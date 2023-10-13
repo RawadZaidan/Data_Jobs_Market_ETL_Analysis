@@ -78,12 +78,15 @@ def glassdoor_driver_goto_wait():
 
 def glassdoor_return_time(job_date):
     date_of_job = None
-    now = datetime.now()
-    if job_date[-1:] == 'd':
-        date_of_job = now - timedelta(days=int(job_date[:-1]))
-    elif job_date[-1:] == 'h':
-        date_of_job = now - timedelta(days=1)
-    date_of_job = date_of_job.strftime("%d-%m-%Y")
+    try:
+        now = datetime.now()
+        if job_date[-1:] == 'd':
+            date_of_job = now - timedelta(days=int(job_date[:-1]))
+        elif job_date[-1:] == 'h':
+            date_of_job = now - timedelta(days=1)
+        date_of_job = date_of_job.strftime("%d-%m-%Y")
+    except:
+        return date_of_job
     return date_of_job
 
 def glassdoor_clean_company_name(name):
@@ -263,7 +266,7 @@ def linkedin_fetch_df():
     titles = [ 'Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
     for title in titles:
         for country in countries:
-            for counter in range(0, 50 ,25):
+            for counter in range(0, 1025 ,25):
                 try:
                     url = f'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={title}&location={country}'
                     url = url + f'&locationId=&f_TPR=r86400&start={counter}'
@@ -351,9 +354,14 @@ def nakuri_get_elements_by_css(css_selector,driver, text=False):
 
 def nakuri_driver_goto_wait():
     driver = nakuri_driver()
-    nakuri_page_go_to(driver)
+    nakuri_page_go_to(driver,url=nakuri_url.url.value)
     nakuri_wait()
     return driver
+
+def nakuri_driver_goto_next_page(driver, counter):
+    url = nakuri_url.url.value + '-' +str(counter)
+    nakuri_page_go_to(driver,url=url)
+    nakuri_wait()
 
 def nakuri_get_date(t):
     current_date = datetime.now()
@@ -494,16 +502,24 @@ def nakuri_get_all_postings_df(driver):
                 'link': job_links, 'posting_date': date}
         data_list.append(data)
     df = pd.DataFrame(data_list)
-    return df
-
-def glassdoor_final_df():
-
-    driver = glassdoor_driver_goto_wait()
-    glassdoor_scroll_to_bottom(driver)
-    unclean_df = glassdoor_get_all_postings_df(driver)
-    df = glassdoor_cleaning_functions(unclean_df)
+    df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
     order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
     df = df[order]
-    df['source'] = 'Glassdoor'
-
+    df['source'] = 'NakuriGulf'
     return df
+
+def nakuri_get_all_postings():
+    counter = 2
+    dff = pd.DataFrame()
+    driver = nakuri_driver_goto_wait()
+    df = nakuri_get_all_postings_df(driver)
+    dff = pd.concat([dff,df], ignore_index=True)
+    while True:
+        try:
+            nakuri_driver_goto_next_page(driver,counter)
+            df = nakuri_get_all_postings_df(driver)
+            dff = pd.concat([dff,df], ignore_index=True)
+            counter +=1
+        except:
+            break
+    return dff

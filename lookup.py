@@ -1,7 +1,45 @@
 from enum import Enum
 
+#--------------- Data Base ---------------#
+
+class ErrorHandling(Enum):
+    DB_CONNECT_ERROR = "DB Connect Error"
+    DB_RETURN_QUERY_ERROR = "DB Return Query Error"
+    API_ERROR = "Error calling API"
+    RETURN_DATA_CSV_ERROR = "Error returning CSV"
+    RETURN_DATA_EXCEL_ERROR = "Error returning Excel"
+    RETURN_DATA_SQL_ERROR = "Error returning SQL"
+    RETURN_DATA_UNDEFINED_ERROR = "Cannot find File type"
+    EXECUTE_QUERY_ERROR = "Error executing the query"
+    NO_ERROR = "No Errors"
+    PREHOOK_SQL_ERROR = "Prehook: SQL Error"
+    PREHOOK_CLOSE_CONNECTION_ERROR = "Error closing connection"
+    HOOK_DICT_RETURN_ERROR = "Error returning lookup items as dict"
+    DB_RETURN_INSERT_INTO_SQL_STMT_ERROR = "Return insert into sql dataframe error:"
+    CSV_ERROR = "Error importing csv files from path"
+    PANDAS_NULLS_ERROR = "Error dropping nulls from df"
+    PANDAS_FILL_NULLS_ERROR="Error replacing nulls from df"
+    RETURN_NET_TRASNFER_ERROR = "Error handling net transfer fee"
+    PLAYERS_ERROR = "Error cleaning players csv"
+    PLAYERVALUATIONS_ERROR = "Error cleaning player valuations csv"
+    GAMES_ERROR = "Error cleaning games csv"
+    GAMES_EVENTS_ERROR = "Error cleaning games events csv"
+    COMPETITIONS_ERROR = "Error cleaning competitions csv"
+    CLUBS_ERROR = "Error cleaning clubs csv"
+    APPEARANCES_ERROR = "Error cleaning appearances csv"
+
+class InputTypes(Enum):
+    SQL = "SQL"
+    CSV = "CSV"
+    EXCEL = "Excel"
+
+class DESTINATION_SCHEMA(Enum):
+    DESTINATION_NAME = "jobs_db"
+
+#--------------- Glassdoor ---------------#
+
 class glassdoor(Enum):
-    link = 'https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=1'
+    link = 'https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=3'
 
 class glassdoor_xpaths(Enum):
     XPATH_NUMBER_OF_ELEMENTS = '//*[@id="left-column"]/div[1]/h1'
@@ -25,7 +63,7 @@ class glassdoor_css_selectors(Enum):
     LI_JOBS_LIST = 'li.JobsList_jobListItem__JBBUV'
     LI_JOB_DATE = '[data-test="job-age"]'
 
-#------------------------------------------------------------------------#
+#--------------- LinkedIn ---------------#
 
 class linkedin_xpaths(Enum):
     JOB_TITLE = '//h3[@class = "base-search-card__title"]'
@@ -44,7 +82,7 @@ class LINKEDIN_DF_COLUMNS(Enum):
 class linkedin_url(Enum):
     url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Data%2BAnalyst&location=Worldwide&locationId=&geoId=92000000&f_TPR=r86400&start='
 
-#------------------------------------------------------------------------#
+#--------------- Nakuri ---------------#
 
 class nakuri_url(Enum):
     url = 'https://www.naukrigulf.com/data-engineer-jobs-'
