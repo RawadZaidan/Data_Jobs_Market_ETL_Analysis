@@ -40,7 +40,6 @@ def return_query(db_session,query):
     finally:
         return results
     
-   
 def return_data_as_df(file_executor, input_type, db_session = None):
     return_dataframe = None
     try:
@@ -80,14 +79,21 @@ def execute_query(db_session, query):
     finally:
         return return_val
     
-# error handling + logging missing
 def return_create_statement_from_df(dataframe,schema_name, table_name):
     type_mapping = {
-        'int64':'INT',
-        'float64':'FLOAT',
+        'int64': 'INT',
+        'int32': 'INT',
+        'int16': 'SMALLINT',
+        'int8': 'TINYINT',
+        'float64': 'FLOAT',
+        'float32': 'REAL',
         'datetime64[ns]': 'TIMESTAMP',
-        'bool':'BOOLEAN',
-        'object': 'TEXT'
+        'datetime64[ns, UTC]': 'TIMESTAMP WITH TIME ZONE',
+        'date': 'DATE',
+        'time': 'TIME',
+        'bool': 'BOOLEAN',
+        'object': 'TEXT',
+        'str': 'TEXT'
     }
     fields = []
     for column, dtype in dataframe.dtypes.items():
@@ -100,13 +106,22 @@ def return_create_statement_from_df(dataframe,schema_name, table_name):
     create_index_statement = ""
     return create_table_statemnt
 
+#------- DONE TILL HERE -------#
 def return_create_statement_from_df_stg(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
     type_mapping = {
-        'int64':'INT',
-        'float64':'FLOAT',
+        'int64': 'INT',
+        'int32': 'INT',
+        'int16': 'SMALLINT',
+        'int8': 'TINYINT',
+        'float64': 'FLOAT',
+        'float32': 'REAL',
         'datetime64[ns]': 'TIMESTAMP',
-        'bool':'BOOLEAN',
-        'object': 'TEXT'
+        'datetime64[ns, UTC]': 'TIMESTAMP WITH TIME ZONE',
+        'date': 'DATE',
+        'time': 'TIME',
+        'bool': 'BOOLEAN',
+        'object': 'TEXT',
+        'str': 'TEXT'
     }
     fields = []
     for column, dtype in dataframe.dtypes.items():
@@ -121,11 +136,19 @@ def return_create_statement_from_df_stg(dataframe, table_name, schema_name=DESTI
 
 def return_create_statement_from_df_fact(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
     type_mapping = {
-        'int64':'INT',
-        'float64':'FLOAT',
+        'int64': 'INT',
+        'int32': 'INT',
+        'int16': 'SMALLINT',
+        'int8': 'TINYINT',
+        'float64': 'FLOAT',
+        'float32': 'REAL',
         'datetime64[ns]': 'TIMESTAMP',
-        'bool':'BOOLEAN',
-        'object': 'TEXT'
+        'datetime64[ns, UTC]': 'TIMESTAMP WITH TIME ZONE',
+        'date': 'DATE',
+        'time': 'TIME',
+        'bool': 'BOOLEAN',
+        'object': 'TEXT',
+        'str': 'TEXT'
     }
     fields = []
     for column, dtype in dataframe.dtypes.items():
