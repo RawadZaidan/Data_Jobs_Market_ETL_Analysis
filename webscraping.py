@@ -11,17 +11,7 @@ import pandas as pd
 import math
 import time
 import re 
-# from bs4 import BeautifulSoup
-# from lxml import etree as et
-# from csv import writer
-# import pandas as pd
-# import threading
-# from concurrent.futures import ThreadPoolExecutor, wait
-# import selenium
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.common.keys import Keys
-# from selenium.common.exceptions import NoSuchElementException
+
 #------------------------------------------------------------------------------------#
 # Glassdoor functions
 
@@ -254,7 +244,11 @@ def linkedin_id_order(df):
     order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
     df = df[order]
     df['source'] = 'LinkedIn'
+    return df
 
+def order_df(df):
+    order = ['ID', 'title', 'company', 'location', 'posting_date', 'link', 'source']
+    df = df[order]
     return df
 
 def linkedin_fetch_df():
@@ -480,17 +474,8 @@ def glassdoor_return_yearly_higher(l):
     else:
         pass
 
-def glassdoor_get_id(x):
-    id = x.split('=')[-1]
-    return id
-
-def glassdoor_cleaning_functions(df):
-    df = df.applymap(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
-    df['posting_date'] = df['posting_date'].apply(glassdoor_return_time)
-    df['company'] = df['company'].apply(glassdoor_clean_company_name)
-    df['Yearly_Min'] = df['salary'].apply(glassdoor_return_yearly_lower)
-    df['Yearly_Max'] = df['salary'].apply(glassdoor_return_yearly_higher)
-    df['ID'] = df['link'].apply(glassdoor_get_id)
+def nakuri_get_id(df):
+    df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
     return df
 
 def nakuri_get_all_postings_df(driver):

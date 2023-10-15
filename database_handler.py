@@ -1,7 +1,7 @@
-import psycopg2
 from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA
 from logging_handler import show_error_message
 import pandas as pd
+import psycopg2
 import pickle
 
 # Load the db_pass variable back from the file using pickle.load
@@ -66,18 +66,15 @@ def return_data_as_df(file_executor, input_type, db_session = None):
         return return_dataframe
 
 def execute_query(db_session, query):
-    return_val = ErrorHandling.NO_ERROR
     try:
         cursor = db_session.cursor()
         cursor.execute(query)
         db_session.commit()
-    except Exception as zahraa:
+    except Exception as e:
         error_prefix = ErrorHandling.EXECUTE_QUERY_ERROR
         return_val = error_prefix
-        suffix = str(zahraa)
+        suffix = str(e)
         show_error_message(error_prefix.value, suffix)
-    finally:
-        return return_val
     
 def return_create_statement_from_df(dataframe,schema_name, table_name):
     type_mapping = {

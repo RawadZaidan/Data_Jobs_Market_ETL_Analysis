@@ -34,7 +34,15 @@ class InputTypes(Enum):
     EXCEL = "Excel"
 
 class DESTINATION_SCHEMA(Enum):
-    DESTINATION_NAME = "jobs_db"
+    DESTINATION_NAME = "stg_jobs_db"
+
+#--------------- LOCAL PATHS ---------------#
+
+class CSV_FOLDER_PATH(Enum):
+    prehook_csvs = 'csvs'
+
+class SQL_PREHOOK_COMMANDS_PATH(Enum):
+    path = 'sql_commands'
 
 #--------------- Glassdoor ---------------#
 
