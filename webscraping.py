@@ -8,12 +8,17 @@ from selenium import webdriver
 from random import randint
 from time import sleep
 import pandas as pd
+import pickle
+import openai
 import math
 import time
 import re 
 
 #------------------------------------------------------------------------------------#
 # Glassdoor functions
+
+with open("open_ai_key.pkl", "rb") as file_key:
+    open_ai_key = pickle.load(file_key)
 
 def glassdoor_driver():
     option= webdriver.ChromeOptions()
@@ -50,7 +55,14 @@ def glassdoor_get_href_by_class(class_name,driver):
         values_list.append(val.get_attribute('href'))
     return values_list
 
-def glassdoor_get_elements_by_css(css_selector,driver, text=False):
+def glassdoor_get_href_values_by_css(driver,css='a.link'):
+    values_list=[]
+    text_values = driver.find_elements(By.CSS_SELECTOR,css)
+    for val in text_values:
+        values_list.append(val.get_attribute('href'))
+    return values_list
+
+def glassdoor_get_elements_by_css(css_selector,driver,text=False):
     items = []
     elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
     if text==True:
@@ -100,6 +112,10 @@ def glassdoor_find_exit_login_button(driver):
 
 def glassdoor_click(button_element):
     button_element.click()
+
+def glassdoor_find_company_button(driver):
+    company_page = driver.find_element(By.XPATH,'//*[@id="PageContent"]/div[1]/div[2]/header/div/div/div[3]/span')
+    return company_page
 
 def glassdoor_fetch_job_info(driver):
     titles    = glassdoor_get_text_values_by_class(glassdoor_classes.CLASS_JOB_TITLE.value, driver)
@@ -193,12 +209,57 @@ def glassdoor_final_df():
     df['source'] = 'Glassdoor'
 
     return df
+
+def glassdoor_individual_jobs_info():
+    driver = glassdoor_driver()
+    df = pd.read_csv('csvs/agg_all.csv')
+    df = df[df['source'] == 'Glassdoor']
+    values = []
+    for row in df.iterrows():
+        url = row[1][-2]
+        id  = row[1][0]
+        source = 'Glassdoor'
+        glassdoor_page_go_to(driver, url)
+        try:
+            pricing = glassdoor_get_elements_by_css('span.small', driver, text=True)[0]
+            lower = glassdoor_return_yearly_lower(pricing)
+            higher = glassdoor_return_yearly_higher(pricing)
+        except:
+            pricing,lower,higher=None,None,None
+        try:
+            details = glassdoor_get_elements_by_css('div.desc', driver, text=True)[0]
+            company_button = glassdoor_find_company_button(driver)
+            glassdoor_click(company_button)
+        except:
+            details = None
+        # company_link = None
+        
+        
+        try:
+            company_link = glassdoor_get_href_values_by_css(driver)[0]
+        except:
+            company_link = None
+        
+        data = {'ID':id,'source':source,'min_yearly_salary':lower, 'max_yearly_salary':higher,'company_link':company_link,'description':details}
+        values.append(data)
+        df_jobs = pd.DataFrame(values)
+    return df_jobs
 #------------------------------------------------------------------------------------#
 # LinkedIn functions:
+
+def linkedin_driver():
+    option= webdriver.ChromeOptions()
+    option.add_argument('--incognito')
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),
+                         options=option)
+    return driver
 
 def linkedin_html_session():
     session = HTMLSession()
     return session
+
+def linkedin_click(button_element):
+    button_element.click()
 
 def linkedin_get_page(session, url=linkedin_url.url.value):
     page = session.get(url)
@@ -228,6 +289,20 @@ def linkedin_job_id_extract(x):
     id = int(id)
     return id
 
+def linkedin_gpt_get_seniority(details_prompt):
+    openai.api_key = open_ai_key
+
+    prompt = '''Reply with only the degree required: What is the degree required in the following job description:\n''' + details_prompt
+
+    response = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt=prompt,
+        max_tokens=30
+    )
+
+    job_title = response.choices[0].text.strip()
+    return job_title
+
 def linkedin_return_all_elements_as_df(page):
 
     titles = linkedin_return_all_elements_by_xpath(linkedin_xpaths.JOB_TITLE.value, page)
@@ -237,6 +312,10 @@ def linkedin_return_all_elements_as_df(page):
     times = linkedin_return_all_elements_by_xpath(linkedin_xpaths.POSTING_TIME.value, page, attr=True, attribute_name=linkedin_attributes.DATETIME.value)
 
     return titles, companies, locations, links, times
+
+def linkedin_job_find_next_page_button(driver):
+    nextpage = driver.find_element(By.XPATH,'//*[@id="main-content"]/section[1]/div/div/section[1]/div/div[2]/section/button[1]')
+    return nextpage
 
 def linkedin_id_order(df):
 
@@ -251,12 +330,36 @@ def order_df(df):
     df = df[order]
     return df
 
+def linkedin_page_go_to(driver, url=nakuri_url.url.value):
+    driver.get(url)
+
+def linkedin_get_text_values_by_class(class_name,driver):
+    values_list=[]
+    text_values = driver.find_elements(By.CLASS_NAME,class_name)
+    for val in text_values:
+        values_list.append(val.text)
+    return values_list[0]
+
+def linkedin_get_href_by_class(class_name,driver):
+    values_list = []
+    href_values = driver.find_elements(By.CLASS_NAME,class_name)
+    for val in href_values:
+        values_list.append(val.get_attribute('href'))
+    return values_list[0]
+
+def linkedin_get_href_by_class(class_name,driver):
+    values_list = []
+    href_values = driver.find_elements(By.CLASS_NAME,class_name)
+    for val in href_values:
+        values_list.append(val.get_attribute('href'))
+    return values_list[0]
+
 def linkedin_fetch_df():
     session = HTMLSession()
 
     dff = pd.DataFrame()
     data_list = []
-    countries = ['Worldwide','France', 'Germany', 'United%20Kingdom', 'United%20States', 'Canada']
+    countries = ['Worldwide','United%20Kingdom', 'United%20States', 'Canada', 'Lebanon', 'UAE',]
     titles = [ 'Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
     for title in titles:
         for country in countries:
@@ -297,6 +400,16 @@ def linkedin_final_df():
 
     return df
 
+def linkedin_get_elements_by_css(css_selector,driver,text=False):
+    items = []
+    elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
+    if text==True:
+        for el in elements:
+            items.append(el.text)
+        return items
+    else:
+        return elements
+
 #------------------------------------------------------------------------------------#
 # NakuriGulf functions 
 
@@ -316,11 +429,6 @@ def nakuri_page_go_to(driver, url=nakuri_url.url.value):
 
 def nakuri_wait():
     sleep(randint(3, 6))
-
-# def glassdoor_get_num_of_jobs(driver):
-#     num_of_jobs = driver.find_element(By.XPATH,
-#                                       glassdoor_xpaths.XPATH_NUMBER_OF_ELEMENTS.value).text
-#     return num_of_jobs
 
 def nakuri_get_text_values_by_class(class_name,driver):
     values_list=[]
@@ -345,6 +453,25 @@ def nakuri_get_elements_by_css(css_selector,driver, text=False):
         return items
     else:
         return elements
+    
+def nakuri_get_href_by_css(css_selector,driver, href=False):
+    items = []
+    elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
+    if href==True:
+        for el in elements:
+            items.append(el.get_attribute('href'))
+        return items
+    else:
+        return elements
+
+def nakuri_get_job_description(driver):
+    try:
+        items = nakuri_get_elements_by_css('article.job-description', driver,text=True)
+        desc = " ".join(items)
+        return desc
+    except:
+        desc=None
+        return desc
 
 def nakuri_driver_goto_wait():
     driver = nakuri_driver()
@@ -443,37 +570,6 @@ def glassdoor_scroll_to_bottom(driver):
             break
     print('Done scrolling pages')
 
-def glassdoor_return_yearly_lower(l):
-
-    m = l.split('(')
-    m = m[0].split(' ')[:3]
-    if m[0][-1].lower() == 'k':
-        return m[0]
-    elif m[0][-1].isdigit():
-        try:
-            price = int((float(m[0][1:])*40*4*12)/1000)
-            m = '$'+str(price)+'K'
-            return m
-        except Exception as e:
-            return 'ERROR'
-    else:
-        pass
-def glassdoor_return_yearly_higher(l):
-
-    m = l.split('(')
-    m = m[0].split(' ')[:3]
-    if m[0][-1].lower() == 'k':
-        return m[-1]
-    elif m[0][-1].isdigit():
-        try:
-            price = int((float(m[2][1:])*40*4*12)/1000)
-            m = '$'+str(price)+'K'
-            return m
-        except Exception as e:
-            return 'ERROR'
-    else:
-        pass
-
 def nakuri_get_id(df):
     df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
     return df
@@ -508,3 +604,41 @@ def nakuri_get_all_postings():
         except:
             break
     return dff
+
+def nakuri_get_salary(items):
+    try:
+        start = items.find('AED')
+        end = items.find(')')
+        new = items[start:end]
+        new = new[new.find('(')+1:]
+        new = new.split()
+        lower = new[0]
+        higher = new[-1]
+        return lower,higher
+    except:
+        lower,higher = None, None
+        return lower,higher
+    
+def nakuri_get_job_details(df,driver):
+    data_list = []
+    for row in df.iterrows():
+        if row[0]<1300:
+            ID = row[1][0]
+            SOURCE = row[1][-1]
+            nakuri_page_go_to(driver, row[1][5])
+            sleep(1)
+            try:
+                items = nakuri_get_text_values_by_class('candidate-profile', driver)
+                lower,higher = nakuri_get_salary(items)
+                desc = nakuri_get_job_description(driver)
+                link = nakuri_get_href_by_class('info-org',driver)
+                data = {'ID':ID, 'source':SOURCE, 'min_yearly_salary':lower,
+                        'max_yearly_salary':higher,'company_link':link,'description':desc}
+                data_list.append(data)
+                print(row[0])
+            except:
+                pass
+        else:
+            break
+    df_new = pd.DataFrame(data_list)
+    return df_new
