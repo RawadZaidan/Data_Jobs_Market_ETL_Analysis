@@ -13,12 +13,19 @@ import openai
 import math
 import time
 import re 
+import pickle
+
+# To load the password from the pickle file, you can use the following code:
+with open('linkedin_user.pkl', 'rb') as file:
+    loaded_user = pickle.load(file)
+    print(loaded_user)
+    
+with open('linkedin_password.pkl', 'rb') as file:
+    loaded_password = pickle.load(file)
+    print(loaded_password)
 
 #------------------------------------------------------------------------------------#
 # Glassdoor functions
-
-with open("open_ai_key.pkl", "rb") as file_key:
-    open_ai_key = pickle.load(file_key)
 
 def glassdoor_driver():
     option= webdriver.ChromeOptions()
@@ -289,10 +296,15 @@ def linkedin_job_id_extract(x):
     id = int(id)
     return id
 
-def linkedin_gpt_get_seniority(details_prompt):
+def gpt_get_seniority(details_prompt):
+
     openai.api_key = open_ai_key
 
-    prompt = '''Reply with only the degree required: What is the degree required in the following job description:\n''' + details_prompt
+    prompt = '''Reply in english with exclusively only one word: 
+    (junior if "jr" or junior mentioned or years of experience is less than 2 years ,
+    mid if mentioned or years of experience is between 2 and 4, 
+    senior if mentioned or years of experience more than 5 years): 
+    What is the seniority level in the following job description:\n''' + details_prompt
 
     response = openai.Completion.create(
         engine="text-davinci-002",
@@ -302,6 +314,8 @@ def linkedin_gpt_get_seniority(details_prompt):
 
     job_title = response.choices[0].text.strip()
     return job_title
+
+
 
 def linkedin_return_all_elements_as_df(page):
 
@@ -323,6 +337,7 @@ def linkedin_id_order(df):
     order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
     df = df[order]
     df['source'] = 'LinkedIn'
+    df.drop_duplicates(subset='ID')
     return df
 
 def order_df(df):
@@ -348,18 +363,35 @@ def linkedin_get_href_by_class(class_name,driver):
     return values_list[0]
 
 def linkedin_get_href_by_class(class_name,driver):
-    values_list = []
-    href_values = driver.find_elements(By.CLASS_NAME,class_name)
-    for val in href_values:
-        values_list.append(val.get_attribute('href'))
-    return values_list[0]
+    values_list = None
+    try:
+        values_list = []
+        href_values = driver.find_elements(By.CLASS_NAME,class_name)
+        for val in href_values:
+            values_list.append(val.get_attribute('href'))
+        return values_list[0]
+    except:
+        return 
+
+def find_technologies_in_string(input_string):
+    # Convert the input string to lowercase for case-insensitive matching
+    input_string = input_string.lower()
+
+    # Define the keywords for technologies
+    techs = ["python", "sql", "r", "scala", "tableau", "power bi", "mysql", "postgresql", "nosql", "etl", "dax", "aws", "azure","junior", "mid", "senior"]
+
+    # Create a dictionary to store Boolean variables for each technology
+    tech_found = {tech: tech in input_string for tech in techs}
+
+    # Return the dictionary of Boolean variables for technologies
+    return tech_found
 
 def linkedin_fetch_df():
     session = HTMLSession()
 
     dff = pd.DataFrame()
     data_list = []
-    countries = ['Worldwide','United%20Kingdom', 'United%20States', 'Canada', 'Lebanon', 'UAE',]
+    countries = ['United%20Kingdom', 'United%20States', 'Canada', 'Australia', 'UAE']
     titles = [ 'Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
     for title in titles:
         for country in countries:
@@ -523,28 +555,6 @@ def nakuri_location(job):
     location = location_[0].text
     return location
 
-def glassdoor_clean_company_name(name):
-    result = re.split(r'(\d)', name, 1)
-    result
-    return result[0]
-
-def glassdoor_return_number_next_buttons(driver):
-    nb_of_jobs = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_NUMBER_OF_ELEMENTS.value).text
-    nb_of_jobs = int(nb_of_jobs.split()[0])
-    skips = int(math.ceil(nb_of_jobs/20))-1
-    return skips
-
-def glassdoor_find_next_page_button(driver):
-    nextpage = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_NEXT_PAGE.value)
-    return nextpage
-
-def glassdoor_find_exit_login_button(driver):
-    exit = driver.find_element(By.XPATH,glassdoor_xpaths.XPATH_EXIT_LOGIN.value)
-    return exit
-
-def glassdoor_click(button_element):
-    button_element.click()
-
 def nakuri_fetch_job_info(driver):
     titles    = nakuri_get_text_values_by_class('designation-title',driver)
     companies = nakuri_get_text_values_by_class('info-org ',driver)
@@ -552,23 +562,6 @@ def nakuri_fetch_job_info(driver):
     job_links = nakuri_get_href_by_class('info-position', driver)
     date      = nakuri_get_time(driver)
     return titles, companies, locations,  job_links, date
-
-def glassdoor_scroll_to_bottom(driver):
-    while True:
-        try:
-            try:
-                glassdoor_wait()
-                exit = glassdoor_find_exit_login_button(driver)
-                glassdoor_click(exit)
-                glassdoor_wait()
-            except:
-                glassdoor_wait()
-                next = glassdoor_find_next_page_button(driver)
-                glassdoor_click(next)
-                glassdoor_wait()
-        except:
-            break
-    print('Done scrolling pages')
 
 def nakuri_get_id(df):
     df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
