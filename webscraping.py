@@ -4,12 +4,13 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from datetime import datetime, timedelta
 from requests_html import HTMLSession
+from bs4 import BeautifulSoup as bs
 from selenium import webdriver
 from random import randint
 from time import sleep
 import pandas as pd
+import requests
 import pickle
-import openai
 import math
 import time
 import re 
@@ -18,11 +19,9 @@ import pickle
 # To load the password from the pickle file, you can use the following code:
 with open('linkedin_user.pkl', 'rb') as file:
     loaded_user = pickle.load(file)
-    print(loaded_user)
-    
+
 with open('linkedin_password.pkl', 'rb') as file:
     loaded_password = pickle.load(file)
-    print(loaded_password)
 
 #------------------------------------------------------------------------------------#
 # Glassdoor functions
@@ -254,9 +253,54 @@ def glassdoor_individual_jobs_info():
 #------------------------------------------------------------------------------------#
 # LinkedIn functions:
 
+import re
+
+def linkedin_get_salary(digest):
+    cleaned_numbers = []
+    try:
+        start_euro = digest.find('£')
+        start_dollar = digest.find(r'$')
+        
+        if start_euro != -1 and (start_dollar == -1 or start_euro < start_dollar):
+            currency_symbol = '£'
+            start = start_euro
+        elif start_dollar != -1:
+            currency_symbol = r'$'
+            start = start_dollar
+        else:
+            return cleaned_numbers
+
+        salary = digest[start:start+40]
+        pattern = r'\d{1,3}(?:,\d{3})*(?:\.\d+)?'
+        numbers = re.findall(pattern, salary)
+        cleaned_numbers = [float(num.replace(',', '')) for num in numbers]
+        if currency_symbol == '£':
+            cleaned_numbers = [1.22*num for num in cleaned_numbers]
+    except:
+        return cleaned_numbers
+    return cleaned_numbers
+
+
+# def linkedin_get_salary(digest):
+#     cleaned_numbers = []
+#     try:
+#         start = digest.find('£')
+#         if start != -1:
+#             salary = digest[start:]
+#         t = salary[:40]
+#         pattern = r'\d{1,3}(?:,\d{3})*(?:\.\d+)?'
+#         numbers = re.findall(pattern, t)
+#         cleaned_numbers = [float(num.replace(',', '')) for num in numbers]
+#     except:
+#         return cleaned_numbers
+#     return cleaned_numbers
+
 def linkedin_driver():
     option= webdriver.ChromeOptions()
     option.add_argument('--incognito')
+    option.add_argument('--ignore-certificate-errors')
+    option.add_argument('--start-maximized')
+
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),
                          options=option)
     return driver
