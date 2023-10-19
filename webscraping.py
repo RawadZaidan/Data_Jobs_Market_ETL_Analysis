@@ -14,7 +14,6 @@ import pickle
 import math
 import time
 import re 
-import pickle
 
 # To load the password from the pickle file, you can use the following code:
 with open('linkedin_user.pkl', 'rb') as file:
@@ -280,21 +279,6 @@ def linkedin_get_salary(digest):
         return cleaned_numbers
     return cleaned_numbers
 
-
-# def linkedin_get_salary(digest):
-#     cleaned_numbers = []
-#     try:
-#         start = digest.find('£')
-#         if start != -1:
-#             salary = digest[start:]
-#         t = salary[:40]
-#         pattern = r'\d{1,3}(?:,\d{3})*(?:\.\d+)?'
-#         numbers = re.findall(pattern, t)
-#         cleaned_numbers = [float(num.replace(',', '')) for num in numbers]
-#     except:
-#         return cleaned_numbers
-#     return cleaned_numbers
-
 def linkedin_driver():
     option= webdriver.ChromeOptions()
     option.add_argument('--incognito')
@@ -339,27 +323,6 @@ def linkedin_job_id_extract(x):
     id = x.split('?refId')[0].split('-')[-1]
     id = int(id)
     return id
-
-def gpt_get_seniority(details_prompt):
-
-    openai.api_key = open_ai_key
-
-    prompt = '''Reply in english with exclusively only one word: 
-    (junior if "jr" or junior mentioned or years of experience is less than 2 years ,
-    mid if mentioned or years of experience is between 2 and 4, 
-    senior if mentioned or years of experience more than 5 years): 
-    What is the seniority level in the following job description:\n''' + details_prompt
-
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=30
-    )
-
-    job_title = response.choices[0].text.strip()
-    return job_title
-
-
 
 def linkedin_return_all_elements_as_df(page):
 
@@ -488,7 +451,6 @@ def linkedin_get_elements_by_css(css_selector,driver,text=False):
 
 #------------------------------------------------------------------------------------#
 # NakuriGulf functions 
-
 
 def nakuri_driver():
     option= webdriver.ChromeOptions()

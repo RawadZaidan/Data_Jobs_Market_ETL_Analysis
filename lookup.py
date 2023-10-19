@@ -47,7 +47,7 @@ class SQL_PREHOOK_COMMANDS_PATH(Enum):
 #--------------- Glassdoor ---------------#
 
 class glassdoor(Enum):
-    link = 'https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=3'
+    link = 'https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=1'
 
 class glassdoor_xpaths(Enum):
     XPATH_NUMBER_OF_ELEMENTS = '//*[@id="left-column"]/div[1]/h1'
@@ -55,10 +55,10 @@ class glassdoor_xpaths(Enum):
     XPATH_EXIT_LOGIN = '/html/body/div[11]/div[2]/div[1]/button'
     
 class glassdoor_classes(Enum):
-    CLASS_JOB_TITLE        = 'css-1nh9iuj'
-    CLASS_JOB_LOCATION     = 'location'
-    CLASS_JOB_COMPANY_NAME = 'css-8wag7x'
-    CLASS_JOB_SALARY       = 'salary-estimate'
+    CLASS_JOB_TITLE        = 'JobCard_seoLink__r4HUE'
+    CLASS_JOB_LOCATION     = 'JobCard_location__DX0MJ'
+    CLASS_JOB_COMPANY_NAME = 'EmployerProfile_profileContainer__nonKT'
+    CLASS_JOB_SALARY       = 'JobCard_salaryEstimate__TLvO7'
     CLASS_JOB_DATE         = 'd-flex'
 
 class ORDERED_DF(Enum):
@@ -96,4 +96,4 @@ class linkedin_url(Enum):
 #--------------- Nakuri ---------------#
 
 class nakuri_url(Enum):
-    url = 'https://www.naukrigulf.com/data-engineer-jobs-'
+    url = 'https://www.naukrigulf.com/data-engineer-jobs-?sort=date'
