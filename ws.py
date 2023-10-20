@@ -93,7 +93,7 @@ def linkedin_final_df():
 def find_technologies_in_string(input_string):
     try:
         input_string = input_string.lower()
-        techs = ["python", "sql", "r", "scala", "tableau", "power bi", "mysql", "postgresql", "nosql", "etl", "dax", "aws", "azure","junior", "mid", "senior"]
+        techs = ["python", "sql", "r", "scala", "tableau", "power_bi", "mysql", "postgresql", "nosql", "etl", "dax", "aws", "azure","remote","hybrid","on_site","junior", "mid", "senior"]
         tech_found = {tech: tech in input_string for tech in techs}
         return tech_found
     except:
@@ -192,7 +192,7 @@ def linkedin_get_company_info(df_co):
             industry = ritems[1].text
             size = ritems[2].text
             data = {'company_id':company_id,  'company_name':company_name,
-                        'industry':industry,'size':size, 'company_direct_link':company_direct_link}
+                        'industry':industry,'size':size, 'direct_link':company_direct_link}
             data_list.append(data)
             print('appended data')
         except:
@@ -366,44 +366,73 @@ def nakuri_get_all_postings(driver):
         except:
             pass
     return df
+    
+def nakuri_get_salary(salary):
+    try: 
+        pattern = r'(\d{1,3}(?:,\d{3})*)(?:\s*-\s*)(\d{1,3}(?:,\d{3})*)'
 
-def nakuri_get_salary(items):
-    try:
-        start = items.find('AED')
-        end = items.find(')')
-        new = items[start:end]
-        new = new[new.find('(')+1:]
-        new = new.split()
-        lower = new[0]
-        higher = new[-1]
+        match = re.search(pattern, salary)
+        if match:
+            lower = int(int(match.group(1).replace(',', ''))*0.27*12)
+            higher = int(int(match.group(2).replace(',', ''))*0.27*12)
+        else:
+            lower,higher = 'N/A', 'N/A'
         return lower,higher
     except:
-        lower,higher = None, None
-        return lower,higher
-    
+        return 'N/A', 'N/A'
+
+def nakuri_get_salary_final(driver):
+    try:
+        elements = driver.find_elements(By.CSS_SELECTOR,'p.value')
+        for el in elements:
+            if el.text[0:3] == 'AED':
+                salary = el.text
+        lower,higher = nakuri_get_salary(salary)
+    except:
+        salary = 'N/A'
+        lower,higher = 'N/A', 'N/A'
+    finally:
+        return lower, higher
+
+def nakuri_get_techs(digest_string) -> dict:
+    try:
+        techs = find_technologies_in_string(digest_string)
+        return techs
+    except:
+        return find_technologies_in_string('sample')
+
 def nakuri_get_job_details(df,driver):
-    data_list = []
-    for row in df.iterrows():
-        if row[0]<1300:
-            ID = row[1][0]
-            SOURCE = row[1][-1]
-            selenium_get_url(driver, row[1][5])
-            sleep(1)
-            try:
-                items = nakuri_get_text_values_by_class('candidate-profile', driver)
-                lower,higher = nakuri_get_salary(items)
-                desc = nakuri_get_job_description(driver)
-                link = nakuri_get_href_by_class('info-org',driver)
-                data = {'ID':ID, 'source':SOURCE, 'min_yearly_salary':lower,
-                        'max_yearly_salary':higher,'company_link':link,'description':desc}
+    try:
+        data_list = []
+        try:
+            for i in range(len(df)):
+                print('Doing: ',i+1,'/',len(df))
+                ID = df.iloc[i,0]
+                SOURCE = df.iloc[i, -1]
+                url = df.iloc[i,5]
+                company_name = df.iloc[i,2]
+                company_id   = id_from_company_name(company_name)
+                selenium_get_url(driver, url)
+                sleep(2)
+                company_link = 'N/A'
+                lower, higher = nakuri_get_salary_final(driver)
+                digest = driver.find_elements(By.CLASS_NAME, 'job-description')
+                digestion = ''
+                for line in digest:
+                    digestion+= line.text
+                techs = nakuri_get_techs(digestion)
+                data = {'ID':ID, 'source':SOURCE,'company_name':company_name,
+                        'company_id':company_id, 'min_yearly_salary':lower,
+                        'max_yearly_salary':higher,'company_link':company_link,
+                        'description':digestion}
+                data.update(techs)
                 data_list.append(data)
-                print(row[0])
-            except:
-                pass
-        else:
-            break
-    df_new = pd.DataFrame(data_list)
-    return df_new
+        except:
+            pass
+        df_ind = pd.DataFrame(data_list)
+        return df_ind
+    except:
+        print('ERROR')
 #-------------------------------------------------------------#
 # Glassdoor functions 
 
@@ -596,9 +625,10 @@ def glassdoor_get_all_postings_df(driver):
     df = pd.DataFrame(data_list)
     return df
 
-def glassdoor_final_df():
+def glassdoor_final_df(driver):
 
-    driver = glassdoor_driver_goto_wait()
+    selenium_get_url(driver, url='https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=1')
+    sleep(5)
     glassdoor_scroll_to_bottom(driver)
     df = glassdoor_get_all_postings_df(driver)
     df = df[df['title'].notna()]
@@ -611,39 +641,6 @@ def glassdoor_final_df():
 
 #-------------------------------------------------#
 # Glassdoor individual jobs functions 
-
-# def glassdoor_individual_jobs_info():
-#     driver = selenium_driver()
-#     df = pd.read_csv('csvs/agg_all.csv')
-#     df = df[df['source'] == 'Glassdoor']
-#     values = []
-#     for row in df.iterrows():
-#         url = row[1][-2]
-#         id  = row[1][0]
-#         source = 'Glassdoor'
-#         glassdoor_page_go_to(driver, url)
-#         try:
-#             pricing = glassdoor_get_elements_by_css('span.small', driver, text=True)[0]
-#             lower = glassdoor_return_yearly_lower(pricing)
-#             higher = glassdoor_return_yearly_higher(pricing)
-#         except:
-#             pricing,lower,higher=None,None,None
-#         try:
-#             details = glassdoor_get_elements_by_css('div.desc', driver, text=True)[0]
-#             company_button = glassdoor_find_company_button(driver)
-#             glassdoor_click(company_button)
-#         except:
-#             details = None
-#         # company_link = None
-#         try:
-#             company_link = glassdoor_get_href_values_by_css(driver)[0]
-#         except:
-#             company_link = None
-        
-#         data = {'ID':id,'source':source,'min_yearly_salary':lower, 'max_yearly_salary':higher,'company_link':company_link,'description':details}
-#         values.append(data)
-#         df_jobs = pd.DataFrame(values)
-#     return df_jobs
 
 def glassdoor_get_comp_name(driver):
     try:

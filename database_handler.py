@@ -103,7 +103,6 @@ def return_create_statement_from_df(dataframe,schema_name, table_name):
     create_index_statement = ""
     return create_table_statemnt
 
-#------- DONE TILL HERE -------#
 def return_create_statement_from_df_stg(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
     type_mapping = {
         'int64': 'INT',
