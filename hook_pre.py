@@ -6,6 +6,12 @@ import pandas as pd
 import datetime
 import os
 
+def remove_spaces_from_columns_df(df):
+    for column in df.columns:
+        new_column_name = column.replace(' ', '_')
+        df.rename(columns={column: new_column_name}, inplace=True)
+    return df
+
 def execute_sql_folder(db_session, sql_command_directory_path='sql_commands'):
     try:
         sql_files = [sqlfile for sqlfile in os.listdir(sql_command_directory_path) if sqlfile.endswith('.sql')]
@@ -25,6 +31,12 @@ def execute_sql_folder(db_session, sql_command_directory_path='sql_commands'):
         error_prefix = ErrorHandling.PREHOOK_SQL_ERROR
         show_error_message(error_prefix.value, suffix)
 
+def comparison_df_transform_salary(s):
+    try:
+        x = int(str(s)[1:-1])*1000
+        return x
+    except:
+        pass
 
 def alter_column_type(db_session, table_name, column, new_type='TEXT',schema=DESTINATION_SCHEMA.DESTINATION_NAME.value):
     query = f'''ALTER TABLE {schema}.{table_name}
@@ -49,24 +61,28 @@ def return_local_csvs_concated():
         df_companies = concat_dfs_in_dir('local_csvs/company_info/')
         df_postings = concat_dfs_in_dir('local_csvs/jobs/')
         df_details = concat_dfs_in_dir('local_csvs/job_details/')
-        return df_companies, df_postings, df_details
+        df_comparison = concat_dfs_in_dir('local_csvs/analyst_engineer_scientist/')
+        return df_companies, df_postings, df_details, df_comparison
     except:
-        return pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+        return pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
 
-def convert_type_before_hook(df_companies, df_postings, df_details):
+def clean_before_hook(df_companies, df_postings, df_details, df_comparison):
     try:
         df_companies['company_id'] =df_companies['company_id'].astype(str)
         df_postings['ID'] =df_postings['ID'].astype(str)
         df_details = df_details.astype({'ID': str, 'company_id': str})
-        return df_companies, df_postings, df_details
+        df_comparison['Lower_Salary'] = df_comparison['Lower_Salary'].apply(comparison_df_transform_salary)
+        df_comparison['Higher_Salary'] = df_comparison['Higher_Salary'].apply(comparison_df_transform_salary)
+        df_comparison = remove_spaces_from_columns_df(df_comparison)
+        return df_companies, df_postings, df_details, df_comparison
     except:
         print('error converting')
 
 def prehook_local_files_into_pg(db_session):
-    
-    df_companies, df_postings, df_details = return_local_csvs_concated()
-    df_companies, df_postings, df_details = convert_type_before_hook(df_companies, df_postings, df_details)
-    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details}    
+
+    df_companies, df_postings, df_details, df_comparison = return_local_csvs_concated()
+    df_companies, df_postings, df_details, df_comparison = clean_before_hook(df_companies, df_postings, df_details, df_comparison)
+    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details, 'comparison':df_comparison}    
     for df_name, df in dfs.items():
         print('Doing DF', df_name)
         stmnt = return_create_statement_from_df_stg(df, df_name)
