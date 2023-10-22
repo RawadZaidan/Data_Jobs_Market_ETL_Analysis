@@ -56,6 +56,17 @@ def concat_dfs_in_dir(folder_path):
     except:
         return pd.DataFrame()
 
+def return_geomap_df():
+    try:
+        df1 = pd.read_csv('local_csvs/A_E_S_geoMap/geoMap_DA.csv')
+        df2 = pd.read_csv('local_csvs/A_E_S_geoMap/geoMap_DS.csv')
+        df3 = pd.read_csv('local_csvs/A_E_S_geoMap/geoMap_DE.csv')
+        df = df1.merge(df2, on='Country',how='outer').merge(df3, on='Country',how='outer')
+        df.fillna('No-Data', inplace=True)
+        return df
+    except:
+        return pd.DataFrame()
+
 def return_local_csvs_concated():
     try:
         df_companies = concat_dfs_in_dir('local_csvs/company_info/')
@@ -82,7 +93,8 @@ def prehook_local_files_into_pg(db_session):
 
     df_companies, df_postings, df_details, df_comparison = return_local_csvs_concated()
     df_companies, df_postings, df_details, df_comparison = clean_before_hook(df_companies, df_postings, df_details, df_comparison)
-    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details, 'comparison':df_comparison}    
+    df_geomap = return_geomap_df()
+    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details, 'comparison':df_comparison, 'geomap_interest':df_geomap}    
     for df_name, df in dfs.items():
         print('Doing DF', df_name)
         stmnt = return_create_statement_from_df_stg(df, df_name)

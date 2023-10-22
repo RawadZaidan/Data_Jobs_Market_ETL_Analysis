@@ -30,6 +30,7 @@ def linkedin_get_page(session, url=linkedin_url.url.value):
     return page
 
 def linkedin_fetch_df():
+    
     session = linkedin_html_session()
 
     dff = pd.DataFrame()
@@ -356,7 +357,7 @@ def nakuri_get_all_postings_df(driver):
 
 def nakuri_get_all_postings(driver):
     df = pd.DataFrame()
-    for page in range(1,5):
+    for page in range(1,4):
         url = f"https://www.naukrigulf.com/data-engineer-jobs-{page}?sort=date"
         try:
             selenium_get_url(driver, url)

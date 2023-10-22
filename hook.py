@@ -1,10 +1,10 @@
 from ws import linkedin_final_df, linkedin_individual_iterate_and_get_df,linkedin_get_company_info, selenium_driver
 from database_handler import return_create_statement_from_df_stg,return_insert_into_sql_statement_from_df_stg
 from ws import glassdoor_final_df, glassdoor_ind_jobs_df, glassdoor_companies_info_df
+from hook_pre import comparison_df_transform_salary,remove_spaces_from_columns_df
 from database_handler import create_connection, return_data_as_df
 from ws import nakuri_get_all_postings,  nakuri_get_job_details
 from logging_handler import show_error_message
-from hook_pre import convert_type_before_hook
 from lookup import InputTypes, ErrorHandling
 from database_handler import execute_query
 from datetime import date
@@ -73,11 +73,22 @@ def get_all_new_data():
 
     return df_companies, df_postings, df_details
 
-def get_clean_new_data():
+def clean_for_hook(df_companies, df_postings, df_details):
+    try:
+        df_companies['company_id'] =df_companies['company_id'].astype(str)
+        df_postings['ID'] =df_postings['ID'].astype(str)
+        df_details = df_details.astype({'ID': str, 'company_id': str})
+        return df_companies, df_postings, df_details
+    except:
+        print('error converting')
 
-    df_companies, df_postings, df_details = get_all_new_data()
-    df_companies, df_postings, df_details = convert_type_before_hook(df_companies, df_postings, df_details)
-    return df_companies, df_postings, df_details
+def get_clean_new_data():
+    try:
+        df_companies, df_postings, df_details = get_all_new_data()
+        df_companies, df_postings, df_details = clean_for_hook(df_companies, df_postings, df_details)
+        return df_companies, df_postings, df_details
+    except Exception as e:
+        print(Exception)
 
 def upload_dfs_into_pg(db_session):
     df_companies, df_postings, df_details = get_clean_new_data()
