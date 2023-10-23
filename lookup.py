@@ -36,6 +36,9 @@ class InputTypes(Enum):
 class DESTINATION_SCHEMA(Enum):
     DESTINATION_NAME = "stg_jobs_db"
 
+class AllStagingTables(Enum):
+    tables = ['companies', 'comparison', 'details', 'geomap_interest', 'postings']
+
 #--------------- LOCAL PATHS ---------------#
 
 class CSV_FOLDER_PATH(Enum):
