@@ -123,6 +123,24 @@ def upload_after_etl_check(db_session):
         execute_sql_folder(db_session)
         print('EXECUTED SQL')
 
+def execute_sql_folder(db_session, sql_command_directory_path='sql_commands_hook'):
+    try:
+        sql_files = [sqlfile for sqlfile in os.listdir(sql_command_directory_path) if sqlfile.endswith('.sql')]
+        sorted_sql_files = sorted(sql_files)
+        errors = []
+
+        for sql_file in sorted_sql_files:
+            file_path = os.path.join(sql_command_directory_path, sql_file)
+            with open(file_path, 'r') as file:
+                sql_query = file.read()
+                return_val = execute_query(db_session=db_session, query=sql_query)
+        if errors:
+            error_message = "\n".join(errors)
+            raise Exception(error_message)
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.PREHOOK_SQL_ERROR
+        show_error_message(error_prefix.value, suffix)
 #-----------------------------------------------------------#
 # Final steps: piecing everything together
 
