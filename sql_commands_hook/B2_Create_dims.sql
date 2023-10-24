@@ -38,24 +38,35 @@ DO UPDATE SET
 CREATE TABLE IF NOT EXISTS jobs_db.dim_daily_jobs 
 (
     id TEXT PRIMARY KEY,
+    title TEXT,
+    location TEXT,
     source TEXT,
     company_name TEXT,
+    link TEXT,
     description TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_id ON jobs_db.dim_daily_jobs(id);
-INSERT INTO jobs_db.dim_daily_jobs (id, source, company_name, description) 
+INSERT INTO jobs_db.dim_daily_jobs (id, title, location, source, company_name, link, description) 
 SELECT 
     DISTINCT s.id,
+	p.title,
+	p.location,
     s.source,
     s.company_name,
+	p.link,
     s.description 
 FROM stg_jobs_db.stg_details AS s
+INNER JOIN stg_jobs_db.stg_postings AS p
+ON s.id = p.id
 WHERE s.id IN (SELECT DISTINCT id FROM stg_jobs_db.stg_details)
 ON CONFLICT (id)
 DO UPDATE SET 
-    company_name = excluded.company_name,
+    title = excluded.title,
+    location = excluded.location,
     source = excluded.source,
+    company_name = excluded.company_name,
+    link = excluded.link,
     description = excluded.description;
 
 -- DONE : Dim comparison
