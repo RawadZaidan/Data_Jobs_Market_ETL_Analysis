@@ -115,6 +115,8 @@ def upload_after_etl_check(db_session):
 
     date, check = return_etl_last_updated_date(db_session)
     print(date, check)
+    execute_sql_folder(db_session)
+
     if check:
         update_etl(db_session, date)
         print('UPDATED ETL')

@@ -67,20 +67,34 @@ def return_geomap_df():
     except:
         return pd.DataFrame()
 
+def fix_posting_date(date):
+    try:
+        sliced_date = date.split('-')
+        if int(sliced_date[0]) > 2000:
+            new_date = date
+        else:
+            new_date = sliced_date[2]+'-'+sliced_date[1]+'-'+sliced_date[0]
+        return new_date
+    except:
+        print('error fixing date in fix_posting_date function')
+
 def return_local_csvs_concated():
     try:
         df_companies = concat_dfs_in_dir('local_csvs/company_info/')
         df_postings = concat_dfs_in_dir('local_csvs/jobs/')
         df_details = concat_dfs_in_dir('local_csvs/job_details/')
         df_comparison = concat_dfs_in_dir('local_csvs/analyst_engineer_scientist/')
-        return df_companies, df_postings, df_details, df_comparison
+        df_interest_timeline = concat_dfs_in_dir('local_csvs/interest_timeline')
+        return df_companies, df_postings, df_details, df_comparison,df_interest_timeline
     except:
-        return pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
+        return pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
 
 def clean_before_hook(df_companies, df_postings, df_details, df_comparison):
     try:
         df_companies['company_id'] =df_companies['company_id'].astype(str)
         df_postings['ID'] =df_postings['ID'].astype(str)
+        df_postings['posting_date'] = df_postings['posting_date'].apply(lambda x: x.replace('/', '-'))
+        df_postings['posting_date'] = df_postings['posting_date'].apply(fix_posting_date)
         df_details = df_details.astype({'ID': str, 'company_id': str})
         df_comparison['Lower_Salary'] = df_comparison['Lower_Salary'].apply(comparison_df_transform_salary)
         df_comparison['Higher_Salary'] = df_comparison['Higher_Salary'].apply(comparison_df_transform_salary)
@@ -91,10 +105,11 @@ def clean_before_hook(df_companies, df_postings, df_details, df_comparison):
 
 def prehook_local_files_into_pg(db_session):
 
-    df_companies, df_postings, df_details, df_comparison = return_local_csvs_concated()
+    df_companies, df_postings, df_details, df_comparison,df_interest_timeline = return_local_csvs_concated()
     df_companies, df_postings, df_details, df_comparison = clean_before_hook(df_companies, df_postings, df_details, df_comparison)
     df_geomap = return_geomap_df()
-    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details, 'comparison':df_comparison, 'geomap_interest':df_geomap}    
+    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details,
+           'comparison':df_comparison, 'geomap_interest':df_geomap, 'comparison_timeline': df_interest_timeline}    
     for df_name, df in dfs.items():
         print('Doing DF', df_name)
         stmnt = return_create_statement_from_df_stg(df, df_name)
