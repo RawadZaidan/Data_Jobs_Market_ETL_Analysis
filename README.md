@@ -16,9 +16,9 @@
 <a  name="philosophy" ></a>
 <img  src="./readme/title2.svg" id="project-philosophy"/>
 
-> A python based ETL project that would extract, transform data from different web sources and load them into a tabular database (PostgreSQL) in an attempt to provide a full scope analytical understanding of the USA recession. 
+> A python based ETL project that would extract, transform data from different web sources and load them into a tabular database (PostgreSQL) in an attempt to provide a full scope analytical understanding of the Data Job market. 
 
->USA Recession Analysis and Prediction Project, also aims to predict the probabilities of when this might occur in the near future based on the historical data analyzed.
+>The project also provides day-to-day jobs from Linkedin-Glassdoor-NaukriGulf with all the skills requried and their description and application link.
 <br>
 
   
@@ -29,9 +29,8 @@
 
 1. Data Engineers.
 2. Data Analysts.
-3. Economists.
-4. Policy Makers.
-5. Journalist.
+3. HR people.
+4. People interested in going into the data world.
   
 
 <br>
@@ -115,7 +114,7 @@
 
   
 
-Bin Tracker is built using the following technologies:
+Data Jobs Finder is built using the following technologies:
 
   
 
@@ -138,10 +137,9 @@ A central dashboard where viewers can view:
 
 ## Backend
 
-1. Web scraping & Automation.
+1. Web scraping & Automation using Selenium, Beautiful Soup and Requests libraries
 2. ETL Pipeline: using python and pandas, raw data is extracted, transformed into a usable format and loaded into postgreSQL database.
 3. Database: Schema Design - Indexing - Data Integrity - Backup & Recovery.
-4. Machine Learning & Predictive Analysis: Model Training - Evaluation and Prediction.  
 
 <br>
 
@@ -210,34 +208,6 @@ A central dashboard where viewers can view:
 
 | ![fsdaf](./readme/implementation/landing.gif)|
 
-  
-
-<br><br>
-
-### Machine Learning (ML) component
-Using Keras, we analyze the historical economic data, training predictive models and deploying them for real-time predictions.
-
-  Data Collection & Preprocessing.
-  Model Selection & Training
-  Model Evaluation.
-  Model Deployment
-  
-
-| ML Flow Diagram|
-
-| ---| ---|
-
-|![fsdaf](./readme/implementation/arduino.gif)|![fsdaf](./readme/implementation/circuit.png)
-
-  
-
-| Data Transfer Demo |
-
-| ---|
-
-| ![fsdaf](./readme/implementation/arduino_data.png) |
-
-<br><br>
 
 
 <!-- How to run -->
@@ -255,13 +225,13 @@ Using Keras, we analyze the historical economic data, training predictive models
 
 -   A computer/server with sufficient RAM and processing power.
 -   Operating system: Linux (preferred for production) or Windows.
--   Required software: Python (3.x), PostgreSQL, Git (for version control), and any other specific software packages.
+-   Required software: Python (3.10), PostgreSQL, Git (for version control), and any other specific software packages.
   
   
 
 **Dependencies**:
 
--   Install the necessary Python libraries: `pandas`, `scikit-learn`, `selenium`, `BeautifulSoup`, etc.
+-   Install the necessary Python libraries: `pandas`, `selenium`, `BeautifulSoup`, etc.
 -   Install database connectors/drivers for PostgreSQL.
   
 
