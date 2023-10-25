@@ -73,7 +73,7 @@ def fix_posting_date(date):
         if int(sliced_date[0]) > 2000:
             new_date = date
         else:
-            new_date = sliced_date[2]+'-'+sliced_date[1]+'-'+sliced_date[0]
+            new_date = sliced_date[1]+'-'+sliced_date[2]+'-'+sliced_date[0]
         return new_date
     except:
         print('error fixing date in fix_posting_date function')

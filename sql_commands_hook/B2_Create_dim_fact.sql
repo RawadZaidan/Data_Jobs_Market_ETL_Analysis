@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS jobs_db.dim_daily_jobs
 CREATE INDEX IF NOT EXISTS idx_id ON jobs_db.dim_daily_jobs(id);
 INSERT INTO jobs_db.dim_daily_jobs (id, title, location, source, company_name, link, description) 
 SELECT 
-    DISTINCT s.id,
+    DISTINCT ON (s.id) 
+	s.id,
 	p.title,
 	p.location,
     s.source,
@@ -60,7 +61,6 @@ SELECT
 FROM stg_jobs_db.stg_details AS s
 INNER JOIN stg_jobs_db.stg_postings AS p
 ON s.id = p.id
-WHERE s.id IN (SELECT DISTINCT id FROM stg_jobs_db.stg_details)
 ON CONFLICT (id)
 DO UPDATE SET 
     title = excluded.title,
