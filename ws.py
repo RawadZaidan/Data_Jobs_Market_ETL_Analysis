@@ -127,6 +127,9 @@ def linkedin_get_salary(description):
         return cleaned_numbers
     return cleaned_numbers
 
+#This function takes the previous postings df and iterates over each posting
+# and fetches the relvant data
+
 def linkedin_individual_iterate_and_get_df(df):
     data_list = []
     for i in range(len(df)):
@@ -171,11 +174,13 @@ def linkedin_individual_iterate_and_get_df(df):
 
 def id_from_company_name(company_name):
     try:
+        #To return a unique, positive company identifier, 
+        #we do modulus of a very large number so that we always get a positive number 
         return hash(company_name)% (2**31)
     except:
         return 'N/A'
 
-# Takes a df from job details
+# Takes a df from job details and iterates to get the company info
 def linkedin_get_company_info(df_co):
     data_list = []
     session = HTMLSession()

@@ -95,7 +95,7 @@
   
   
 
-| Announcements screen | Login screen | Landing screen |
+| PowerBI SCREENSHOTS | Landing screen | Summary screen | etc ..... 
 
 | ---| ---| ---|
 
@@ -112,7 +112,7 @@
 
 <br>
 
-  
+  REPLACE WITH SCREENSHOTS OF POWERBI
 
 Data Jobs Finder is built using the following technologies:
 
@@ -246,7 +246,6 @@ git clone https://github.co/your-repo-link/usa-recession-analysis.git
 
 ```
 
-  
 **Set Up the Database**:
 
 -   Start the PostgreSQL server.
@@ -258,7 +257,6 @@ git clone https://github.co/your-repo-link/usa-recession-analysis.git
 **Start the Data Ingestion & ETL Process**:
 `python data_ingestion_script.py`
 
-
-You should be able to check the app.log file to see the ETL work.
+You should be able to check the screenshots file to see the ETL work and its timing .
 
 As for the dashboard access: Please use this link "public powerbi link" to access your data.
