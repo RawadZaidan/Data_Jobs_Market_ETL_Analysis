@@ -707,34 +707,21 @@ def glassdoor_final_df(driver):
 #-------------------------------------------------#
 # Glassdoor individual jobs functions 
 
-def glassdoor_get_comp_name(driver):
+def glassdoor_get_href_by_xpath(driver,xpath):
     try:
-        company_name = driver.find_element(By.XPATH, '//*[@id="PageContent"]/div[1]/div[1]/div[2]/div/div/div[2]/div/div[1]/div[2]/div/div/div[1]/div').text
-        company_name = glassdoor_clean_company_name(company_name)
-        return company_name
-    except:
-        return 'N/A'
-
-def glassdoor_get_comp_link(driver):
-    try:
-        company_link = driver.find_element(By.XPATH, '//*[@id="PageContent"]/div[1]/div[1]/div[2]/div/div/div[2]/div/div[1]/div[1]/a').get_attribute('href')
+        company_link = driver.find_element(By.XPATH, xpath).get_attribute('href')
         return company_link
     except:
         return 'N/A'
 
-def glassdoor_get_salary(driver):
+def glassdoor_get_elements_by_css_selector(driver,css_selector):
     try:
-        salary = driver.find_element(By.XPATH, '//*[@id="PageContent"]/div[1]/div[1]/div[2]/div/div/div[2]/div/div[1]/div[2]/div/div/div[4]/span').text
-        return salary
-    except:
-        return 'N/A'
-
-def glassdoor_get_digest(driver):
-    try:
-        digest = driver.find_element(By.CSS_SELECTOR, 'div.desc').text
+        digest = driver.find_element(By.CSS_SELECTOR, css_selector).text
         return digest
     except:
         return 'N/A'
+
+from lookup import glassdoor_xpaths
 
 # Takes first listings df
 def glassdoor_ind_jobs_df(driver,df):
@@ -746,13 +733,13 @@ def glassdoor_ind_jobs_df(driver,df):
             SOURCE = df.iloc[i, -1]
             url = df.iloc[i,5]
             selenium_get_url(driver, url=url)
-            company_name = glassdoor_get_comp_name(driver)
+            company_name = glassdoor_find_element_by_xpath(driver,glassdoor_xpaths.XPATH_COMP_NAME.value)
             company_id = id_from_company_name(company_name)
-            company_link = glassdoor_get_comp_link(driver)
-            salary = glassdoor_get_salary(driver)
+            company_link = glassdoor_get_href_by_xpath(driver,glassdoor_xpaths.XPATH_COMP_LINK.value)
+            salary = glassdoor_find_element_by_xpath(driver,glassdoor_xpaths.XPATH_SALARY.value)
             lower = glassdoor_return_yearly_lower(salary)
             higher = glassdoor_return_yearly_higher(salary)
-            digest = glassdoor_get_digest(driver)
+            digest = glassdoor_get_elements_by_css_selector(driver,'div.desc')
             techs = find_technologies_in_string(digest)
             data = {'ID':ID, 'source':SOURCE,'company_name':company_name,'company_id':company_id, 'min_yearly_salary':lower,
                         'max_yearly_salary':higher,'company_link':company_link,'description':digest}
