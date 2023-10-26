@@ -205,6 +205,28 @@ DO UPDATE SET
     mid = excluded.mid,
     senior = excluded.senior;
 
+UPDATE jobs_db.fact_daily_jobs
+SET posting_date = TO_DATE(posting_date, 'DD/MM/YYYY')
+WHERE posting_date ~ E'^\\d{2}/\\d{2}/\\d{4}$';
+
+UPDATE jobs_db.fact_daily_jobs
+SET max_yearly_salary = CASE
+    WHEN max_yearly_salary < min_yearly_salary THEN min_yearly_salary
+    ELSE max_yearly_salary
+END;
+
+UPDATE jobs_db.fact_daily_jobs
+SET max_yearly_salary = CASE
+    WHEN max_yearly_salary < 299 THEN max_yearly_salary * 1000
+    ELSE max_yearly_salary
+END; 
+
+UPDATE jobs_db.fact_daily_jobs
+SET min_yearly_salary = CASE
+    WHEN min_yearly_salary < 299 THEN min_yearly_salary * 1000
+    ELSE min_yearly_salary
+END; 
+
 -- Fact Geomap
 
 UPDATE stg_jobs_db.stg_geomap_interest
