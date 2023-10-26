@@ -18,7 +18,7 @@
 
 > A python based ETL project that would extract, transform data from different web sources and load them into a tabular database (PostgreSQL) in an attempt to provide a full scope analytical understanding of the Data Job market. 
 
->The project also provides day-to-day jobs from Linkedin-Glassdoor-NaukriGulf with all the skills requried and their description and application link.
+>The project also provides day-to-day jobs from Linkedin-Glassdoor-NaukriGulf with all the skills requried, their description and application link basedo n user filters (Python, SQL, AWS, Azure, Junior, Mid, Senior levels, etc...)
 <br>
 
   
@@ -41,23 +41,19 @@
 
   
 1. As a Data Engineer:
-	I want to automatically scrape various economic indicators from reputable sources so that our dataset is always up-to-date.
+	I want to automatically scrape various data jobs from reputable sources so that our dataset is always up-to-date.
 	I want to integrate different data sources seamlessly.
 	Ensure fault tolerance in our data pipelines, so that potential failures don't interrupt our analyses.
+	Get log.txt file that will showcase each step.
 2. As an Analyst:
 	I want to query the database.
-	I want to view the sentiment analysis results to understand public sentiment around economic conditions.
+	I want to view the jobs analysis based on skill factors to understand the data job market better.
 	I want to visualize the data using PowerBI.
-3. As an Economist:
-	I want to access a dataset that provides a holistic view of the US economic landscape post-COVID-19.
-	I want to compare model's projections with other economic forecasts to ensure accuracy and reliability.
-4. As a Policy Maker:
-	I want to understand if the US is still in recession to make informed decisions about economic policies.
-	I want to view reports highlighting key economic indicators and their trend over time.
-5. As a Journalist:
-	I want to access clear visualizations.
-	I want to understand public sentiments.
-	I want an access on the historical view of the economic indicators to showcase trends.
+3. As an HR:
+	I want to access a dataset that provides a holistic view of the data job market and know what to expect/describe in a vacancy post.
+	I want to compare different titles and their requirements/skills/compensation.
+4. As a Person interested in the data world:
+	I want to understand what to learn, what's in demand, different functions and job titles.
 
 
 <br><br>
@@ -65,7 +61,7 @@
 <!-- Prototyping -->
 <img  src="./readme/title3.svg"  id="prototyping"/>
 
-> We have designed our projects to webscrape, through an ETL project and including it in a PowerBI Sample Dashboard, 
+> We have designed our projects to webscrape, through an ETL project and including it in a PowerBI Sample Dashboard 
 
   
 
