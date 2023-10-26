@@ -108,12 +108,6 @@
 
 <br>
 
-  REPLACE WITH SCREENSHOTS OF POWERBI
-
-Data Jobs Finder is built using the following technologies:
-
-  
-
 ## Frontend
 
 Interactive PowerBI Dashboard:
@@ -124,12 +118,7 @@ A central dashboard where viewers can view:
 3. Predictive Analysis: A visualization of the ML model's performance about he US econmoic recovery compared to actual data.
 4. Interactive filters: options to filter data by date, region, or specific economic indicatiors for customized views.
 
-
-  
-
 <br>
-
-  
 
 ## Backend
 
@@ -212,7 +201,7 @@ A central dashboard where viewers can view:
 <img  src="./readme/title6.svg" id="run"/>
   
 
-> To set up ## **USA Recession Analysis and Prediction** follow these steps:
+> To set up **Data Jobs Market Analysis** follow these steps:
 
 ### Prerequisites
 
@@ -221,14 +210,14 @@ A central dashboard where viewers can view:
 
 -   A computer/server with sufficient RAM and processing power.
 -   Operating system: Linux (preferred for production) or Windows.
--   Required software: Python (3.10), PostgreSQL, Git (for version control), and any other specific software packages.
+-   Required software: Python (3.10), PostgreSQL, Git (for version control) and Vscode.
   
   
 
 **Dependencies**:
 
--   Install the necessary Python libraries: `pandas`, `selenium`, `BeautifulSoup`, etc.
--   Install database connectors/drivers for PostgreSQL.
+-   Install the necessary Python libraries: `pandas`, `selenium`, `BeautifulSoup`, etc... (can be found in the `requirements.txt file`)
+-   Install database connectors/drivers for PostgreSQL: `psycopg2`.
   
 
 ### **Setting Up the Environment**:
@@ -245,7 +234,7 @@ git clone https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis.git
 **Set Up the Database**:
 
 -   Start the PostgreSQL server.
--   Create a new database and user with the appropriate permissions.
+-   Create a new database and user with the appropriate permissions and add your credentials.
 -   Run the initialization script `python prehook.py`
 
 ### **Running the Backend**:
