@@ -144,7 +144,6 @@ def linkedin_individual_iterate_and_get_df(df):
                 url = df.iloc[i,-2]
                 company_id = id_from_company_name(df.iloc[i,2])
                 company_name = df.iloc[i,2]
-                # print(url)
                 r = requests.get(url)
                 s = bs(r.text, 'html.parser')
                 digest = s.text
@@ -233,6 +232,14 @@ def selenium_driver():
         error_prefix = ErrorHandling.SELENIUM_DRIVER_ERROR.value
         show_error_message(error_prefix, suffix)
 
+def selenium_get_url(driver, url):
+    try:
+        driver.get(url)
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.SELENIUM_GET_ERROR.value
+        show_error_message(error_prefix, suffix)
+
 def quit_driver(driver):
     try:
         driver.quit()
@@ -248,13 +255,6 @@ def nakuri_get_text_values_by_class(class_name,driver):
         values_list.append(val.text)
     return values_list[0]
 
-def nakuri_get_href_by_class(class_name,driver):
-    values_list = []
-    href_values = driver.find_elements(By.CLASS_NAME,class_name)
-    for val in href_values:
-        values_list.append(val.get_attribute('href'))
-    return values_list[0]
-
 def nakuri_get_elements_by_css(css_selector,driver, text=False):
     items = []
     elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
@@ -264,7 +264,14 @@ def nakuri_get_elements_by_css(css_selector,driver, text=False):
         return items
     else:
         return elements
-    
+
+def nakuri_get_href_by_class(class_name,driver):
+    values_list = []
+    href_values = driver.find_elements(By.CLASS_NAME,class_name)
+    for val in href_values:
+        values_list.append(val.get_attribute('href'))
+    return values_list[0]
+
 def nakuri_get_href_by_css(css_selector,driver, href=False):
     items = []
     elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
@@ -274,7 +281,7 @@ def nakuri_get_href_by_css(css_selector,driver, href=False):
         return items
     else:
         return elements
-    
+
 def nakuri_get_job_description(driver):
     try:
         items = nakuri_get_elements_by_css('article.job-description', driver,text=True)
@@ -286,14 +293,6 @@ def nakuri_get_job_description(driver):
 
 def wait():
     sleep(randint(3, 6))
-
-def selenium_get_url(driver, url):
-    try:
-        driver.get(url)
-    except Exception as error:
-        suffix = str(error)
-        error_prefix = ErrorHandling.SELENIUM_GET_ERROR.value
-        show_error_message(error_prefix, suffix)
 
 def nakuri_get_date(t):
     try:
