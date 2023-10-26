@@ -1,10 +1,12 @@
 from lookup import glassdoor, glassdoor_classes, glassdoor_xpaths,glassdoor_css_selectors, linkedin_url, linkedin_xpaths, linkedin_attributes, nakuri_url
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
+from logging_handler import show_error_message
 from selenium.webdriver.common.by import By
 from datetime import datetime, timedelta
 from requests_html import HTMLSession
 from bs4 import BeautifulSoup as bs
+from lookup import ErrorHandling
 from selenium import webdriver
 from random import randint
 from time import sleep
@@ -43,9 +45,9 @@ def linkedin_fetch_df():
                 try:
                     url = f'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={title}&location={country}'
                     url = url + f'&locationId=&f_TPR=r86400&start={counter}'
-                    print('Now on page: ', counter)
+                    # Use this if you want to see the pages you're on in the linkedin iterator
+                    # print('Now on page: ', counter)
                     page = linkedin_get_page(session, url=url)
-                    # Use Requests-HTML functions to scrape data from the page
                     items = page.html.xpath('//li')
                     if len(items) == 0:
                         break
@@ -131,44 +133,49 @@ def linkedin_get_salary(description):
 # and fetches the relvant data
 
 def linkedin_individual_iterate_and_get_df(df):
-    data_list = []
-    for i in range(len(df)):
-        print(i,"/",len(df))
-        try:
-            SOURCE = 'LinkedIn'
-            ID = df.iloc[i,0]
-            url = df.iloc[i,-2]
-            company_id = id_from_company_name(df.iloc[i,2])
-            company_name = df.iloc[i,2]
-            # print(url)
-            r = requests.get(url)
-            s = bs(r.text, 'html.parser')
-            digest = s.text
-            job_description = s.find_all('div',class_="show-more-less-html__markup")[0].text
-            sleep(randint(1,2))
-            salary = linkedin_get_salary(digest)
-            if len(salary)>1:
-                lower = salary[0]
-                higher = salary[1]
-            elif len(salary) == 1:
-                lower = salary[0]
-                higher = salary[0]
-            else:
-                lower = None
-                higher = None
-            techs = find_technologies_in_string(digest)
-            # data
-            link = s.find_all("a", attrs={"data-tracking-control-name":"public_jobs_topcard_logo"})[0]
-            link = link.get("href")
-            data = {'ID':ID, 'source':SOURCE,'company_name':company_name,'company_id':company_id, 'min_yearly_salary':lower,
-                        'max_yearly_salary':higher,'company_link':link,'description':job_description}
-            data.update(techs)
-            data_list.append(data)
-            print('appended data')
-        except:
-            pass
-    df_new = pd.DataFrame(data_list)
-    return df_new
+    try:
+        data_list = []
+        for i in range(len(df)):
+            print(i,"/",len(df))
+            try:
+                SOURCE = 'LinkedIn'
+                ID = df.iloc[i,0]
+                url = df.iloc[i,-2]
+                company_id = id_from_company_name(df.iloc[i,2])
+                company_name = df.iloc[i,2]
+                # print(url)
+                r = requests.get(url)
+                s = bs(r.text, 'html.parser')
+                digest = s.text
+                job_description = s.find_all('div',class_="show-more-less-html__markup")[0].text
+                sleep(randint(1,2))
+                salary = linkedin_get_salary(digest)
+                if len(salary)>1:
+                    lower = salary[0]
+                    higher = salary[1]
+                elif len(salary) == 1:
+                    lower = salary[0]
+                    higher = salary[0]
+                else:
+                    lower = None
+                    higher = None
+                techs = find_technologies_in_string(digest)
+                # data
+                link = s.find_all("a", attrs={"data-tracking-control-name":"public_jobs_topcard_logo"})[0]
+                link = link.get("href")
+                data = {'ID':ID, 'source':SOURCE,'company_name':company_name,'company_id':company_id, 'min_yearly_salary':lower,
+                            'max_yearly_salary':higher,'company_link':link,'description':job_description}
+                data.update(techs)
+                data_list.append(data)
+                print('appended data')
+            except:
+                pass
+        df_new = pd.DataFrame(data_list)
+        return df_new
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.LINKEDIN_INDIVIDUAL_JOBS_ERROR.value
+        show_error_message(error_prefix, suffix)
 #----------------------------------------------------------------------#
 # Linkedin Companies functions 
 
@@ -181,41 +188,57 @@ def id_from_company_name(company_name):
         return 'N/A'
 
 # Takes a df from job details and iterates to get the company info
-def linkedin_get_company_info(df_co):
-    data_list = []
-    session = HTMLSession()
-    df_co = df_co.drop_duplicates(subset='company_id')
-    for i in range(len(df_co)):
-        try:
-            print(i,'/',len(df_co))
-            company_id = df_co.iloc[i,3]
-            url = df_co.iloc[i,6]
-            company_name = df_co.iloc[i,2]
-            r = session.get(url)
-            sleep(2)
-            ritems = r.html.xpath('//dd')
-            company_direct_link = ritems[0].text
-            industry = ritems[1].text
-            size = ritems[2].text
-            data = {'company_id':company_id,  'company_name':company_name,
-                        'industry':industry,'size':size, 'direct_link':company_direct_link}
-            data_list.append(data)
-            print('appended data')
-        except:
-            pass
-    df_new = pd.DataFrame(data_list)
-    df_new
+def linkedin_get_company_info(df_co):   
+    try:
+        data_list = []
+        session = HTMLSession()
+        df_co = df_co.drop_duplicates(subset='company_id')
+        for i in range(len(df_co)):
+            try:
+                print(i,'/',len(df_co))
+                company_id = df_co.iloc[i,3]
+                url = df_co.iloc[i,6]
+                company_name = df_co.iloc[i,2]
+                r = session.get(url)
+                sleep(2)
+                ritems = r.html.xpath('//dd')
+                company_direct_link = ritems[0].text
+                industry = ritems[1].text
+                size = ritems[2].text
+                data = {'company_id':company_id,  'company_name':company_name,
+                            'industry':industry,'size':size, 'direct_link':company_direct_link}
+                data_list.append(data)
+                print('appended data')
+            except:
+                pass
+        df_new = pd.DataFrame(data_list)
+        return df_new
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.LINKEDIN_COMPANY_INFO_ERROR.value
+        show_error_message(error_prefix, suffix)
+
 #----------------------------------------------------------------------#
 # Naukri Functions use selenium
 def selenium_driver():
-    option= webdriver.ChromeOptions()
-    option.add_argument('--incognito')
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),
-                         options=option)
-    return driver
+    try:
+        option= webdriver.ChromeOptions()
+        option.add_argument('--incognito')
+        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),
+                            options=option)
+        return driver
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.SELENIUM_DRIVER_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def quit_driver(driver):
-    driver.quit()
+    try:
+        driver.quit()
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.QUIT_DRIVER_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def nakuri_get_text_values_by_class(class_name,driver):
     values_list=[]
@@ -264,36 +287,46 @@ def wait():
     sleep(randint(3, 6))
 
 def selenium_get_url(driver, url):
-    driver.get(url)
+    try:
+        driver.get(url)
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling..value
+        show_error_message(error_prefix, suffix)
 
 def nakuri_get_date(t):
-    current_date = datetime.now()
-    t = t.split(' ')
-    if len(t)>2:
-        t = t[-3:]
-        if t[0] == 'on':
-            day = int(t[1])
-            month_name = t[2]
-            month_dict = {
-                'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
-                'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
-            }
-            month = month_dict.get(month_name, 1)
-            year = current_date.year
-            date_o = str(day)+'-'+str(month)+'-'+str(year)
-            return date_o
+    try:
+        current_date = datetime.now()
+        t = t.split(' ')
+        if len(t)>2:
+            t = t[-3:]
+            if t[0] == 'on':
+                day = int(t[1])
+                month_name = t[2]
+                month_dict = {
+                    'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+                    'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+                }
+                month = month_dict.get(month_name, 1)
+                year = current_date.year
+                date_o = str(day)+'-'+str(month)+'-'+str(year)
+                return date_o
 
-        elif t[2] == 'ago':
-            days_ago = int(t[0])
-            date_o = current_date - timedelta(days=days_ago)
-            date_o = date_o.strftime("%d-%m-%Y")
-            return date_o
-    elif len(t) == 2:
-        if t[-1] == 'Today':
-            date_o = current_date.strftime("%d-%m-%Y")
-            return date_o
-        else:
-            return 'ERROR'
+            elif t[2] == 'ago':
+                days_ago = int(t[0])
+                date_o = current_date - timedelta(days=days_ago)
+                date_o = date_o.strftime("%d-%m-%Y")
+                return date_o
+        elif len(t) == 2:
+            if t[-1] == 'Today':
+                date_o = current_date.strftime("%d-%m-%Y")
+                return date_o
+            else:
+                return 'ERROR'
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling..value
+        show_error_message(error_prefix, suffix)
         
 def nakuri_get_time(job):
     try:
@@ -334,44 +367,59 @@ def nak_get_links(driver):
 
 
 def nakuri_fetch_job_info(driver):
-    titles    = nak_get_titles(driver)
-    companies = nak_get_companies(driver)
-    locations = nakuri_location(driver)
-    job_links = nak_get_links(driver)
-    date      = nakuri_get_time(driver)
-    return titles, companies, locations,  job_links, date
+    try:
+        titles    = nak_get_titles(driver)
+        companies = nak_get_companies(driver)
+        locations = nakuri_location(driver)
+        job_links = nak_get_links(driver)
+        date      = nakuri_get_time(driver)
+        return titles, companies, locations,  job_links, date
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling..value
+        show_error_message(error_prefix, suffix)
 
 def nakuri_get_id(df):
     df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
     return df
 
 def nakuri_get_all_postings_df(driver):
-    data_list = []
-    listings = nakuri_get_elements_by_css('div.ng-box.srp-tuple', driver)
-    for job in listings:
-        titles, companies, locations, job_links, date = nakuri_fetch_job_info(job)
-        data = {'title': titles, 'company': companies, 'location': locations,
-                'link': job_links, 'posting_date': date}
-        data_list.append(data)
-    df = pd.DataFrame(data_list)
-    df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
-    order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
-    df = df[order]
-    df['source'] = 'NakuriGulf'
-    return df
+    try:
+        data_list = []
+        listings = nakuri_get_elements_by_css('div.ng-box.srp-tuple', driver)
+        for job in listings:
+            titles, companies, locations, job_links, date = nakuri_fetch_job_info(job)
+            data = {'title': titles, 'company': companies, 'location': locations,
+                    'link': job_links, 'posting_date': date}
+            data_list.append(data)
+        df = pd.DataFrame(data_list)
+        df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
+        order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
+        df = df[order]
+        df['source'] = 'NakuriGulf'
+        return df
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling..value
+        show_error_message(error_prefix, suffix)
 
 def nakuri_get_all_postings(driver):
-    df = pd.DataFrame()
-    for page in range(1,4):
-        url = f"https://www.naukrigulf.com/data-engineer-jobs-{page}?sort=date"
-        try:
-            selenium_get_url(driver, url)
-            sleep(5)
-            dff = nakuri_get_all_postings_df(driver)
-            df = pd.concat([df,dff], ignore_index=True)
-        except:
-            pass
-    return df
+    try:
+        df = pd.DataFrame()
+        for page in range(1,4):
+            url = f"https://www.naukrigulf.com/data-engineer-jobs-{page}?sort=date"
+            try:
+                selenium_get_url(driver, url)
+                sleep(5)
+                dff = nakuri_get_all_postings_df(driver)
+                df = pd.concat([df,dff], ignore_index=True)
+            except:
+                pass
+        return df
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.NAKURI_GET_ALL_POSTINGS_ERROR.value
+        show_error_message(error_prefix, suffix)
     
 def nakuri_get_salary(salary):
     try: 
@@ -437,8 +485,10 @@ def nakuri_get_job_details(df,driver):
             pass
         df_ind = pd.DataFrame(data_list)
         return df_ind
-    except:
-        print('ERROR')
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.NAKURI_GET_DETAILS_ERROR.value
+        show_error_message(error_prefix, suffix)
 #-------------------------------------------------------------#
 # Glassdoor functions 
 
@@ -608,43 +658,58 @@ def glassdoor_return_yearly_higher(l):
         return 'N/A'
 
 def glassdoor_get_id(x):
-    id = x.split('=')[-1]
-    return id
+    try:
+        id = x.split('=')[-1]
+        return id
+    except:
+        return 'N/A'
 
 def glassdoor_cleaning_functions(df):
-    df['posting_date'] = df['posting_date'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
-    df['link'] = df['link'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
-    df['posting_date'] = df['posting_date'].apply(glassdoor_return_time)
-    df['posting_date'] = df['posting_date'].apply(lambda x: x.replace('-', '/'))
-    df['company'] = df['company'].apply(glassdoor_clean_company_name)
-    df['ID'] = df['link'].apply(glassdoor_get_id)
-    return df
+    try:
+        df['posting_date'] = df['posting_date'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
+        df['link'] = df['link'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
+        df['posting_date'] = df['posting_date'].apply(glassdoor_return_time)
+        df['posting_date'] = df['posting_date'].apply(lambda x: x.replace('-', '/'))
+        df['company'] = df['company'].apply(glassdoor_clean_company_name)
+        df['ID'] = df['link'].apply(glassdoor_get_id)
+        return df
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.GLASSDOOR_CLEANING_POSTINGS_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def glassdoor_get_all_postings_df(driver):
-    data_list = []
-    listings = glassdoor_get_elements_by_css(glassdoor_css_selectors.LI_JOBS_LIST.value, driver)
-    for job in listings:
-        titles, companies, locations, salaries, job_links, date = glassdoor_fetch_job_info(job)
-        data = {'title': titles, 'company': companies, 'location': locations,
-                'link': job_links, 'salary': salaries, 'posting_date': date}
-        data_list.append(data)
-    df = pd.DataFrame(data_list)
-    return df
+    try:
+        data_list = []
+        listings = glassdoor_get_elements_by_css(glassdoor_css_selectors.LI_JOBS_LIST.value, driver)
+        for job in listings:
+            titles, companies, locations, salaries, job_links, date = glassdoor_fetch_job_info(job)
+            data = {'title': titles, 'company': companies, 'location': locations,
+                    'link': job_links, 'salary': salaries, 'posting_date': date}
+            data_list.append(data)
+        df = pd.DataFrame(data_list)
+        return df
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.GLASSDOOR_FETCH_POSTINGS_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def glassdoor_final_df(driver):
-
-    selenium_get_url(driver, url='https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=1')
-    sleep(5)
-    glassdoor_scroll_to_bottom(driver)
-    df = glassdoor_get_all_postings_df(driver)
-    df = df[df['title'].notna()]
-    df = glassdoor_cleaning_functions(df)
-    order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
-    df = df[order]
-    df['source'] = 'Glassdoor'
-
-    return df
-
+    try:
+        selenium_get_url(driver, url='https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=1')
+        sleep(5)
+        glassdoor_scroll_to_bottom(driver)
+        df = glassdoor_get_all_postings_df(driver)
+        df = df[df['title'].notna()]
+        df = glassdoor_cleaning_functions(df)
+        order = ['ID', 'title', 'company', 'location', 'posting_date', 'link']
+        df = df[order]
+        df['source'] = 'Glassdoor'
+        return df
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.GLASSDOOR_POSTINGS_ERROR.value
+        show_error_message(error_prefix, suffix)
 #-------------------------------------------------#
 # Glassdoor individual jobs functions 
 
@@ -679,27 +744,32 @@ def glassdoor_get_digest(driver):
 
 # Takes first listings df
 def glassdoor_ind_jobs_df(driver,df):
-    data_list = []
-    for i in range(len(df)):
-        print('Doing: ',i,'/',len(df))
-        ID = df.iloc[i,0]
-        SOURCE = df.iloc[i, -1]
-        url = df.iloc[i,5]
-        glassdoor_page_go_to(driver, url)
-        company_name = glassdoor_get_comp_name(driver)
-        company_id = id_from_company_name(company_name)
-        company_link = glassdoor_get_comp_link(driver)
-        salary = glassdoor_get_salary(driver)
-        lower = glassdoor_return_yearly_lower(salary)
-        higher = glassdoor_return_yearly_higher(salary)
-        digest = glassdoor_get_digest(driver)
-        techs = find_technologies_in_string(digest)
-        data = {'ID':ID, 'source':SOURCE,'company_name':company_name,'company_id':company_id, 'min_yearly_salary':lower,
-                    'max_yearly_salary':higher,'company_link':company_link,'description':digest}
-        data.update(techs)
-        data_list.append(data)
-    df_ind = pd.DataFrame(data_list)
-    return df_ind
+    try:
+        data_list = []
+        for i in range(len(df)):
+            print('Doing: ',i,'/',len(df))
+            ID = df.iloc[i,0]
+            SOURCE = df.iloc[i, -1]
+            url = df.iloc[i,5]
+            glassdoor_page_go_to(driver, url)
+            company_name = glassdoor_get_comp_name(driver)
+            company_id = id_from_company_name(company_name)
+            company_link = glassdoor_get_comp_link(driver)
+            salary = glassdoor_get_salary(driver)
+            lower = glassdoor_return_yearly_lower(salary)
+            higher = glassdoor_return_yearly_higher(salary)
+            digest = glassdoor_get_digest(driver)
+            techs = find_technologies_in_string(digest)
+            data = {'ID':ID, 'source':SOURCE,'company_name':company_name,'company_id':company_id, 'min_yearly_salary':lower,
+                        'max_yearly_salary':higher,'company_link':company_link,'description':digest}
+            data.update(techs)
+            data_list.append(data)
+        df_ind = pd.DataFrame(data_list)
+        return df_ind
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.GLASSDOOR_INDIVIDUALS_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 #--------------------------------------------------------------------#
 # Glassdoor companies functions 
@@ -732,20 +802,25 @@ def glassdoor_goto_glitch(driver, url):
         pass
 
 def glassdoor_companies_info_df(driver, df_ind):
-    df = df_ind.drop_duplicates(subset='company_id')
-    data_list = []
-    for i in range(len(df)):
-        print('Doing: ',i+1,'/',len(df))
-        Comp_ID      = df.iloc[i,0]
-        url          = df.iloc[i,6]
-        company_name = df.iloc[i,2]
-        glassdoor_goto_glitch(driver, url)
-        sleep(3)
-        industry     = glassdoor_comp_industry(driver)
-        size         = glassdoor_comp_size(driver)
-        direct_link  = glassdoor_comp_link(driver)
-        data = {'company_id':Comp_ID, 'company_name':company_name,'industry':industry,
-                'size':size, 'direct_link':direct_link}
-        data_list.append(data)
-    df_comp = pd.DataFrame(data_list)
-    return df_comp
+    try:
+        df = df_ind.drop_duplicates(subset='company_id')
+        data_list = []
+        for i in range(len(df)):
+            print('Doing: ',i+1,'/',len(df))
+            Comp_ID      = df.iloc[i,0]
+            url          = df.iloc[i,6]
+            company_name = df.iloc[i,2]
+            glassdoor_goto_glitch(driver, url)
+            sleep(3)
+            industry     = glassdoor_comp_industry(driver)
+            size         = glassdoor_comp_size(driver)
+            direct_link  = glassdoor_comp_link(driver)
+            data = {'company_id':Comp_ID, 'company_name':company_name,'industry':industry,
+                    'size':size, 'direct_link':direct_link}
+            data_list.append(data)
+        df_comp = pd.DataFrame(data_list)
+        return df_comp
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.GLASSDOOR_COMPANIES_ERROR.value
+        show_error_message(error_prefix, suffix)

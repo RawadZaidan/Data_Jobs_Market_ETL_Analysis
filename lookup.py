@@ -22,6 +22,17 @@ class ErrorHandling(Enum):
     IMPORTING_LOCAL_CSVS_INTO_PG_ERROR = "Error importing local csvs into postgres"
     REMOVING_SPACES_COLUMN_ERROR = "Error removing spaces from column names df - Hook-Pre.py"
     CLEANING_CSVS_BEFORE_PG_ERROR = "Error cleaninig csvs before migration"
+    LINKEDIN_COMPANY_INFO_ERROR = "Error getting company info"
+    LINKEDIN_INDIVIDUAL_JOBS_ERROR = "Error getting individual jobs"
+    SELENIUM_DRIVER_ERROR = "Error starting selenium driver"
+    QUIT_DRIVER_ERROR = "Error quitting driver"
+    GLASSDOOR_COMPANIES_ERROR = "Error getting company info from glassdoor"
+    GLASSDOOR_INDIVIDUALS_ERROR = "Error getting individual jobs"
+    GLASSDOOR_POSTINGS_ERROR = "Error getting postings from Glassdoor"
+    GLASSDOOR_FETCH_POSTINGS_ERROR = "Error fetching postings"
+    GLASSDOOR_CLEANING_POSTINGS_ERROR = "Error cleaning postings"
+    NAKURI_GET_DETAILS_ERROR = "Error fetching Nakuri jobs details"
+    NAKURI_GET_ALL_POSTINGS_ERROR = "Error getting all postings"
     
 class InputTypes(Enum):
     SQL = "SQL"
