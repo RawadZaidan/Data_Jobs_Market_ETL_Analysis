@@ -66,19 +66,35 @@ def execute_sql_folder(db_session, sql_command_directory_path='sql_commands_hook
 
 def get_all_new_data():
 
-    print('Waitng for driver...')
+    logging_main()
+
     driver = selenium_driver()
-
+    logging.info('This is an info message: Hook - Getting Linkedin Postings')
     linkedin_postings = linkedin_final_df()
+    logging.info('This is an info message: Hook - DONE Getting Linkedin Postings')
+    logging.info('This is an info message: Hook - Getting Glassdoor Postings')
     glassdoor_postings = glassdoor_final_df(driver)
+    logging.info('This is an info message: Hook - DONE Getting Glassdoor Postings')
+    logging.info('This is an info message: Hook - Getting Naukri Postings')
     naukri_postings = nakuri_get_all_postings(driver)
+    logging.info('This is an info message: Hook - DONE Getting Glassdoor Postings')
 
+    logging.info('This is an info message: Hook - Getting Linkedin Job Details')
     linkedin_ind = linkedin_individual_iterate_and_get_df(linkedin_postings)
+    logging.info('This is an info message: Hook - DONE Getting Linkedin Job Details')
+    logging.info('This is an info message: Hook - Getting Glassdoor Job Details')
     glassdoor_ind = glassdoor_ind_jobs_df(driver, glassdoor_postings)
+    logging.info('This is an info message: Hook - DONE Getting Linkedin Job Details')
+    logging.info('This is an info message: Hook - Getting Glassdoor Job Details')
     naukri_ind = nakuri_get_job_details(naukri_postings,driver)
+    logging.info('This is an info message: Hook - DONE Getting Linkedin Job Details')
 
+    logging.info('This is an info message: Hook - Getting Linkedin Company Details')
     linkedin_company = linkedin_get_company_info(linkedin_ind)
+    logging.info('This is an info message: Hook - DONE Getting Linkedin Company Details')
+    logging.info('This is an info message: Hook - Getting Glassdoor Company Details')
     glassdoor_company = glassdoor_companies_info_df(driver, glassdoor_ind)
+    logging.info('This is an info message: Hook - DONE Getting Glassdoor Company Details')
 
     df_postings   = pd.concat([linkedin_postings,glassdoor_postings,naukri_postings], ignore_index=True)
     df_details    = pd.concat([linkedin_ind,glassdoor_ind,naukri_ind], ignore_index=True)
@@ -97,8 +113,11 @@ def clean_for_hook(df_companies, df_postings, df_details):
 
 def get_clean_new_data():
     try:
+        logging_main()
         df_companies, df_postings, df_details = get_all_new_data()
+        logging.info('This is an info message: Hook - Got all Dfs of today')
         df_companies, df_postings, df_details = clean_for_hook(df_companies, df_postings, df_details)
+        logging.info('This is an info message: Hook - Cleaned Dfs of today')
         return df_companies, df_postings, df_details
     except Exception as e:
         print(Exception)
@@ -116,6 +135,7 @@ def upload_dfs_into_pg(db_session):
         print('DONE DF')
 
 def update_etl(db_session, date):
+    logging_main()
     try:
         query = 'TRUNCATE TABLE stg_jobs_db.etl_checkpoint'
         execute_query(db_session, query)
@@ -123,20 +143,19 @@ def update_etl(db_session, date):
         execute_query(db_session, query)
     except:
         print('error')
+        logging.critical("This is a critical message: Hook - Error updating etl last_run_date")
 
 def upload_after_etl_check(db_session):
-
+    logging_main()
     date, check = return_etl_last_updated_date(db_session)
-    print(date, check)
     execute_sql_folder(db_session)
-
     if check:
         update_etl(db_session, date)
-        print('UPDATED ETL')
+        logging.info('This is an info message: ETL last_update UPDATED')
         upload_dfs_into_pg(db_session)
-        print('DONE WITH DFS')
+        logging.info('This is an info message:Uploaded dataframes into pgadmin')
         execute_sql_folder(db_session)
-        print('EXECUTED SQL')
+        logging.info('This is an info message: SQL folder executed')
 
 def execute_sql_folder(db_session, sql_command_directory_path='sql_commands_hook'):
     try:
@@ -154,13 +173,21 @@ def execute_sql_folder(db_session, sql_command_directory_path='sql_commands_hook
             raise Exception(error_message)
     except Exception as error:
         suffix = str(error)
-        error_prefix = ErrorHandling.PREHOOK_SQL_ERROR
-        show_error_message(error_prefix.value, suffix)
+        error_prefix = ErrorHandling.PREHOOK_SQL_ERROR.value
+        show_error_message(error_prefix, suffix)
 #-----------------------------------------------------------#
 # Final steps: piecing everything together
 
 def hook():
+    try:
+        logging_main()
 
-    db_session = create_connection()
+        db_session = create_connection()
+        logging.info('This is an info message: Hook - Created DB_SESSION')
 
-    upload_after_etl_check(db_session)
+        upload_after_etl_check(db_session)
+        logging.info('This is an info message: Hook - Done')
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.HOOK_ERROR.value
+        show_error_message(error_prefix.value, suffix)

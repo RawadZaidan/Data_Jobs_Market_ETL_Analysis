@@ -38,6 +38,8 @@ class ErrorHandling(Enum):
     NAKURI_GET_DATE_ERROR = "Error getting date"
     SELENIUM_GET_ERROR = "Error getting selenium url"
     NAKURI_ID_ERROR = "Error getting naukri id"
+    HOOK_ERROR = "Error executing hook"
+
 class InputTypes(Enum):
     SQL = "SQL"
     CSV = "CSV"
