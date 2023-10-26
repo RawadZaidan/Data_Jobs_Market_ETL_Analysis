@@ -39,7 +39,7 @@ def linkedin_fetch_df():
     dff = pd.DataFrame()
     data_list = []
     countries = ['United%20Kingdom', 'United%20States', 'Canada', 'Australia', 'UAE']
-    titles = [ 'Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
+    titles = ['Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
     for title in titles:
         for country in countries:
             for counter in range(0, 225 ,25):
