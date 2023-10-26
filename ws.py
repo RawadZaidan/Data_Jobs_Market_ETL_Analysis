@@ -358,7 +358,6 @@ def nak_get_links(driver):
     except:
         return 'N/A'
 
-
 def nakuri_fetch_job_info(driver):
     try:
         titles    = nak_get_element_by_class(driver,nakuri_get_info.title.value)
@@ -373,8 +372,13 @@ def nakuri_fetch_job_info(driver):
         show_error_message(error_prefix, suffix)
 
 def nakuri_get_id(df):
-    df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
-    return df
+    try:
+        df['ID'] = df['link'].apply(lambda x: x.split('jid-')[-1])
+        return df
+    except Exception as error:  
+        suffix = str(error)
+        error_prefix = ErrorHandling.NAKURI_ID_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def nakuri_get_all_postings_df(driver):
     try:
@@ -446,7 +450,7 @@ def nakuri_get_techs(digest_string) -> dict:
         techs = find_technologies_in_string(digest_string)
         return techs
     except:
-        return find_technologies_in_string('sample')
+        return find_technologies_in_string('Sample')
 
 def nakuri_get_job_details(df,driver):
     try:
