@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from datetime import datetime, timedelta
 from requests_html import HTMLSession
 from bs4 import BeautifulSoup as bs
+from lookup import nakuri_get_info
 from lookup import ErrorHandling
 from selenium import webdriver
 from random import randint
@@ -343,8 +344,6 @@ def nakuri_location(job):
         return location
     except:
         return 'N/A'
-
-from lookup import nakuri_get_info
 
 def nak_get_element_by_class(driver, class_name):
     try:
