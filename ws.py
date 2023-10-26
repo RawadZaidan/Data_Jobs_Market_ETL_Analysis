@@ -492,9 +492,6 @@ def nakuri_get_job_details(df,driver):
 def glassdoor_quit_driver(driver):
     driver.quit()
 
-def glassdoor_page_go_to(driver, url=glassdoor.link.value):
-    driver.get(url)
-
 def glassdoor_wait():
     sleep(randint(2, 6))
 
@@ -546,7 +543,7 @@ def glassdoor_get_elements_by_css(css_selector,driver,text=False):
 
 def glassdoor_driver_goto_wait():
     driver = selenium_driver()
-    glassdoor_page_go_to(driver)
+    selenium_get_url(driver, url=glassdoor.link.value)
     glassdoor_wait()
     return driver
 
@@ -693,7 +690,7 @@ def glassdoor_get_all_postings_df(driver):
 
 def glassdoor_final_df(driver):
     try:
-        selenium_get_url(driver, url='https://www.glassdoor.com/Job/data-engineer-jobs-SRCH_KO0,13.htm?fromAge=1')
+        selenium_get_url(driver, url=glassdoor.link.value)
         sleep(5)
         glassdoor_scroll_to_bottom(driver)
         df = glassdoor_get_all_postings_df(driver)
@@ -748,7 +745,7 @@ def glassdoor_ind_jobs_df(driver,df):
             ID = df.iloc[i,0]
             SOURCE = df.iloc[i, -1]
             url = df.iloc[i,5]
-            glassdoor_page_go_to(driver, url)
+            selenium_get_url(driver, url=url)
             company_name = glassdoor_get_comp_name(driver)
             company_id = id_from_company_name(company_name)
             company_link = glassdoor_get_comp_link(driver)
@@ -771,32 +768,33 @@ def glassdoor_ind_jobs_df(driver,df):
 #--------------------------------------------------------------------#
 # Glassdoor companies functions 
 
-def glassdoor_comp_industry(driver):
+def glassdoor_find_element_by_xpath(driver, xpath):
     try:
-        industry     = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[8]/a').text
-        return industry
-    except:
-        return 'N/A'
-
-def glassdoor_comp_size(driver):
-    try:
-        size = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[3]').text
-        return size
+        element = driver.find_element(By.XPATH, xpath).text
+        return element
     except:
         return 'N/A'
     
-def glassdoor_comp_link(driver):
-    try:
-        link = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[1]/a').text
-        return link
-    except:
-        return 'N/A'
+def glassdoor_comp_industry(driver):
+    # try:
+        industry     = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[8]/a').text
+    #     return industry
+    # except:
+    #     return 'N/A'
 
-def glassdoor_goto_glitch(driver, url):
-    try:
-        glassdoor_page_go_to(driver, url)
-    except:
-        pass
+def glassdoor_comp_size(driver):
+    # try:
+        size = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[3]').text
+    #     return size
+    # except:
+    #     return 'N/A'
+    
+def glassdoor_comp_link(driver):
+    # try:
+        link = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[1]/a').text
+    #     return link
+    # except:
+    #     return 'N/A'
 
 def glassdoor_companies_info_df(driver, df_ind):
     try:
@@ -807,7 +805,7 @@ def glassdoor_companies_info_df(driver, df_ind):
             Comp_ID      = df.iloc[i,0]
             url          = df.iloc[i,6]
             company_name = df.iloc[i,2]
-            glassdoor_goto_glitch(driver, url)
+            selenium_get_url(driver, url)
             sleep(3)
             industry     = glassdoor_comp_industry(driver)
             size         = glassdoor_comp_size(driver)
