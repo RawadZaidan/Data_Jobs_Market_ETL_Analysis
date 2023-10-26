@@ -148,7 +148,7 @@ def update_etl(db_session, date):
 def upload_after_etl_check(db_session):
     logging_main()
     date, check = return_etl_last_updated_date(db_session)
-    execute_sql_folder(db_session)
+    # execute_sql_folder(db_session)
     if check:
         update_etl(db_session, date)
         logging.info('This is an info message: ETL last_update UPDATED')

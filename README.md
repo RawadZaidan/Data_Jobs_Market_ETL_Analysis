@@ -78,9 +78,9 @@
   
   
 
-### Data Flow Diagrams
+### Data Tables Schema
 
-  
+<img  src="./readme/DB_Tables.png"  id="prototyping"/>
 
 | Map screen | Dashboard screen | Bin Management screen |
 
@@ -95,7 +95,7 @@
 
 | ---| ---| ---|
 
-| ![Map](readme/mockups/web/announcements.png)| ![Map](./readme/mockups/web/login.png)| ![Map](./readme/mockups/web/landing.png)|
+| ![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)| 
 
 <br><br>
 

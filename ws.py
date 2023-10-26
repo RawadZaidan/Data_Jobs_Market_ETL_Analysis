@@ -38,11 +38,11 @@ def linkedin_fetch_df():
 
     dff = pd.DataFrame()
     data_list = []
-    countries = ['United%20Kingdom', 'United%20States', 'Canada', 'Australia', 'UAE']
-    titles = ['Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist', 'BI%2Banalyst', 'etl%2Bdeveloper']
+    countries = ['United%20Kingdom', 'United%20States', 'UAE']
+    titles = ['Data%2Bengineer','Data%2Banalyst', 'Data%2Bscientist']
     for title in titles:
         for country in countries:
-            for counter in range(0, 225 ,25):
+            for counter in range(0, 125 ,25):
                 try:
                     url = f'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={title}&location={country}'
                     url = url + f'&locationId=&f_TPR=r86400&start={counter}'
@@ -403,7 +403,7 @@ def nakuri_get_all_postings_df(driver):
 def nakuri_get_all_postings(driver):
     try:
         df = pd.DataFrame()
-        for page in range(1,4):
+        for page in range(1,3):
             url = f"https://www.naukrigulf.com/data-engineer-jobs-{page}?sort=date"
             try:
                 selenium_get_url(driver, url)
