@@ -7,10 +7,15 @@ import datetime
 import os
 
 def remove_spaces_from_columns_df(df):
-    for column in df.columns:
-        new_column_name = column.replace(' ', '_')
-        df.rename(columns={column: new_column_name}, inplace=True)
-    return df
+    try:
+        for column in df.columns:
+            new_column_name = column.replace(' ', '_')
+            df.rename(columns={column: new_column_name}, inplace=True)
+        return df
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.REMOVING_SPACES_COLUMN_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def execute_sql_folder(db_session, sql_command_directory_path='sql_commands'):
     try:
@@ -37,11 +42,6 @@ def comparison_df_transform_salary(s):
         return x
     except:
         pass
-
-def alter_column_type(db_session, table_name, column, new_type='TEXT',schema=DESTINATION_SCHEMA.DESTINATION_NAME.value):
-    query = f'''ALTER TABLE {schema}.{table_name}
-               ALTER COLUMN {column} TYPE {new_type};'''
-    execute_query(db_session, query)
 
 def concat_dfs_in_dir(folder_path):
     try:
@@ -100,24 +100,30 @@ def clean_before_hook(df_companies, df_postings, df_details, df_comparison):
         df_comparison['Higher_Salary'] = df_comparison['Higher_Salary'].apply(comparison_df_transform_salary)
         df_comparison = remove_spaces_from_columns_df(df_comparison)
         return df_companies, df_postings, df_details, df_comparison
-    except:
-        print('error converting')
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.CLEANING_CSVS_BEFORE_PG_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def prehook_local_files_into_pg(db_session):
-
-    df_companies, df_postings, df_details, df_comparison,df_interest_timeline = return_local_csvs_concated()
-    df_companies, df_postings, df_details, df_comparison = clean_before_hook(df_companies, df_postings, df_details, df_comparison)
-    df_geomap = return_geomap_df()
-    dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details,
-           'comparison':df_comparison, 'geomap_interest':df_geomap, 'comparison_timeline': df_interest_timeline}    
-    for df_name, df in dfs.items():
-        print('Doing DF', df_name)
-        stmnt = return_create_statement_from_df_stg(df, df_name)
-        execute_query(db_session, stmnt)
-        queries = return_insert_into_sql_statement_from_df_stg(df, df_name)
-        for query in queries:
-            execute_query(db_session, query)
-        print('DONE DF')
+    try:
+        df_companies, df_postings, df_details, df_comparison,df_interest_timeline = return_local_csvs_concated()
+        df_companies, df_postings, df_details, df_comparison = clean_before_hook(df_companies, df_postings, df_details, df_comparison)
+        df_geomap = return_geomap_df()
+        dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details,
+            'comparison':df_comparison, 'geomap_interest':df_geomap, 'comparison_timeline': df_interest_timeline}    
+        for df_name, df in dfs.items():
+            print('Doing DF', df_name)
+            stmnt = return_create_statement_from_df_stg(df, df_name)
+            execute_query(db_session, stmnt)
+            queries = return_insert_into_sql_statement_from_df_stg(df, df_name)
+            for query in queries:
+                execute_query(db_session, query)
+            print('DONE: ',df_name,'. NO ERRORS')
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.IMPORTING_LOCAL_CSVS_INTO_PG_ERROR.value
+        show_error_message(error_prefix, suffix)
 
 def prehook():
 

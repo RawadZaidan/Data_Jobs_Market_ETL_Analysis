@@ -19,15 +19,10 @@ class ErrorHandling(Enum):
     CSV_ERROR = "Error importing csv files from path"
     PANDAS_NULLS_ERROR = "Error dropping nulls from df"
     PANDAS_FILL_NULLS_ERROR="Error replacing nulls from df"
-    RETURN_NET_TRASNFER_ERROR = "Error handling net transfer fee"
-    PLAYERS_ERROR = "Error cleaning players csv"
-    PLAYERVALUATIONS_ERROR = "Error cleaning player valuations csv"
-    GAMES_ERROR = "Error cleaning games csv"
-    GAMES_EVENTS_ERROR = "Error cleaning games events csv"
-    COMPETITIONS_ERROR = "Error cleaning competitions csv"
-    CLUBS_ERROR = "Error cleaning clubs csv"
-    APPEARANCES_ERROR = "Error cleaning appearances csv"
-
+    IMPORTING_LOCAL_CSVS_INTO_PG_ERROR = "Error importing local csvs into postgres"
+    REMOVING_SPACES_COLUMN_ERROR = "Error removing spaces from column names df - Hook-Pre.py"
+    CLEANING_CSVS_BEFORE_PG_ERROR = "Error cleaninig csvs before migration"
+    
 class InputTypes(Enum):
     SQL = "SQL"
     CSV = "CSV"
