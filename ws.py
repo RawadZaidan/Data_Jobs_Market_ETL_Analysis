@@ -774,27 +774,6 @@ def glassdoor_find_element_by_xpath(driver, xpath):
         return element
     except:
         return 'N/A'
-    
-def glassdoor_comp_industry(driver):
-    # try:
-        industry     = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[8]/a').text
-    #     return industry
-    # except:
-    #     return 'N/A'
-
-def glassdoor_comp_size(driver):
-    # try:
-        size = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[3]').text
-    #     return size
-    # except:
-    #     return 'N/A'
-    
-def glassdoor_comp_link(driver):
-    # try:
-        link = driver.find_element(By.XPATH, '//*[@id="MainContent"]/div[1]/div/ul/li[1]/a').text
-    #     return link
-    # except:
-    #     return 'N/A'
 
 def glassdoor_companies_info_df(driver, df_ind):
     try:
@@ -807,9 +786,9 @@ def glassdoor_companies_info_df(driver, df_ind):
             company_name = df.iloc[i,2]
             selenium_get_url(driver, url)
             sleep(3)
-            industry     = glassdoor_comp_industry(driver)
-            size         = glassdoor_comp_size(driver)
-            direct_link  = glassdoor_comp_link(driver)
+            industry     = glassdoor_find_element_by_xpath(driver, '//*[@id="MainContent"]/div[1]/div/ul/li[8]/a')
+            size         = glassdoor_find_element_by_xpath(driver, '//*[@id="MainContent"]/div[1]/div/ul/li[3]')
+            direct_link  = glassdoor_find_element_by_xpath(driver, '//*[@id="MainContent"]/div[1]/div/ul/li[1]/a')
             data = {'company_id':Comp_ID, 'company_name':company_name,'industry':industry,
                     'size':size, 'direct_link':direct_link}
             data_list.append(data)
