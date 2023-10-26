@@ -36,6 +36,7 @@ class ErrorHandling(Enum):
     NAKURI_GET_ALL_POSTINGS_ONEPAGE_ERROR = "Error fetching all the data on one page"
     NAKURI_GET_JOBS_ERROR = "Error getting info from individual jobs"
     NAKURI_GET_DATE_ERROR = "Error getting date"
+    SELENIUM_GET_ERROR = "Error getting selenium url"
     
 class InputTypes(Enum):
     SQL = "SQL"

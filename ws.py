@@ -291,7 +291,7 @@ def selenium_get_url(driver, url):
         driver.get(url)
     except Exception as error:
         suffix = str(error)
-        error_prefix = ErrorHandling..value
+        error_prefix = ErrorHandling.SELENIUM_GET_ERROR.value
         show_error_message(error_prefix, suffix)
 
 def nakuri_get_date(t):
