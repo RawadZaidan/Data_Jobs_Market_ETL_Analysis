@@ -119,18 +119,16 @@ A central dashboard where viewers can view:
 <a  name="Demo"  ></a>
 <img  src="./readme/title5.svg" id="#demo"/>
 
-> Show command line of ETL performance - Logger view
+> ETL performance - Logger view
 
   
-### App
+### Time for each run
 
 
-| Dashboard Screen | Create Bin Screen |
 
-| ---| ---|
+ ![Landing](./readme/logger2.png) | ![fsdaf](./readme/logger1.png) |
 
-| ![Landing](./readme/implementation/dashboard.gif) | ![fsdaf](./readme/implementation/create_bin.gif) |
-
+On average, every ETL run takes around 40-60 minutes (also depends on internet speed)
 <!-- How to run -->
 
 <a  name="run"  ></a>
