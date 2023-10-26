@@ -238,7 +238,7 @@ A central dashboard where viewers can view:
 
 ```sh
 
-git clone https://github.co/your-repo-link/usa-recession-analysis.git
+git clone https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis.git
 
 ```
 
@@ -246,12 +246,12 @@ git clone https://github.co/your-repo-link/usa-recession-analysis.git
 
 -   Start the PostgreSQL server.
 -   Create a new database and user with the appropriate permissions.
--   Run any initialization scripts to set up tables or initial.
+-   Run the initialization script `python prehook.py`
 
 ### **Running the Backend**:
 
 **Start the Data Ingestion & ETL Process**:
-`python data_ingestion_script.py`
+`python ETL.py`
 
 You should be able to check the screenshots file to see the ETL work and its timing .
 
