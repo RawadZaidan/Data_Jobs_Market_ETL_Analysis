@@ -344,17 +344,12 @@ def nakuri_location(job):
     except:
         return 'N/A'
 
-def nak_get_titles(driver):
-    try:
-        title = driver.find_element(By.CLASS_NAME, 'designation-title').text
-        return title
-    except:
-        return 'N/A'
+from lookup import nakuri_get_info
 
-def nak_get_companies(driver):
+def nak_get_element_by_class(driver, class_name):
     try:
-        title = driver.find_element(By.CLASS_NAME, 'info-org').text
-        return title
+        element = driver.find_element(By.CLASS_NAME,class_name ).text
+        return element
     except:
         return 'N/A'
 
@@ -368,8 +363,8 @@ def nak_get_links(driver):
 
 def nakuri_fetch_job_info(driver):
     try:
-        titles    = nak_get_titles(driver)
-        companies = nak_get_companies(driver)
+        titles    = nak_get_element_by_class(driver,nakuri_get_info.title.value)
+        companies = nak_get_element_by_class(driver,nakuri_get_info.company.value)
         locations = nakuri_location(driver)
         job_links = nak_get_links(driver)
         date      = nakuri_get_time(driver)

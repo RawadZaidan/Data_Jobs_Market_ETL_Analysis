@@ -110,3 +110,7 @@ class linkedin_url(Enum):
 
 class nakuri_url(Enum):
     url = 'https://www.naukrigulf.com/data-engineer-jobs-?sort=date'
+
+class nakuri_get_info(Enum):
+    title = 'designation-title'
+    company = 'info-org'
