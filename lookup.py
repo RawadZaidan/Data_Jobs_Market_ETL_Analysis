@@ -33,6 +33,9 @@ class ErrorHandling(Enum):
     GLASSDOOR_CLEANING_POSTINGS_ERROR = "Error cleaning postings"
     NAKURI_GET_DETAILS_ERROR = "Error fetching Nakuri jobs details"
     NAKURI_GET_ALL_POSTINGS_ERROR = "Error getting all postings"
+    NAKURI_GET_ALL_POSTINGS_ONEPAGE_ERROR = "Error fetching all the data on one page"
+    NAKURI_GET_JOBS_ERROR = "Error getting info from individual jobs"
+    NAKURI_GET_DATE_ERROR = "Error getting date"
     
 class InputTypes(Enum):
     SQL = "SQL"

@@ -325,7 +325,7 @@ def nakuri_get_date(t):
                 return 'ERROR'
     except Exception as error:
         suffix = str(error)
-        error_prefix = ErrorHandling..value
+        error_prefix = ErrorHandling.NAKURI_GET_DATE_ERROR.value
         show_error_message(error_prefix, suffix)
         
 def nakuri_get_time(job):
@@ -376,7 +376,7 @@ def nakuri_fetch_job_info(driver):
         return titles, companies, locations,  job_links, date
     except Exception as error:
         suffix = str(error)
-        error_prefix = ErrorHandling..value
+        error_prefix = ErrorHandling.NAKURI_GET_JOBS_ERROR.value
         show_error_message(error_prefix, suffix)
 
 def nakuri_get_id(df):
@@ -400,7 +400,7 @@ def nakuri_get_all_postings_df(driver):
         return df
     except Exception as error:
         suffix = str(error)
-        error_prefix = ErrorHandling..value
+        error_prefix = ErrorHandling.NAKURI_GET_ALL_POSTINGS_ONEPAGE_ERROR.value
         show_error_message(error_prefix, suffix)
 
 def nakuri_get_all_postings(driver):
