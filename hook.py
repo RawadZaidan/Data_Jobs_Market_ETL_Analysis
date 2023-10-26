@@ -10,7 +10,20 @@ from database_handler import execute_query
 from datetime import date
 import pandas as pd
 import datetime
+import logging
 import os
+
+def logging_main() -> None:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(message)s",  # Fix the typo here
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="log.txt"
+    )
+    # Samples:
+    # logging.debug('This is a debug message.')
+    # logging.info('This is an info message')
+    # logging.critical("This is a critical message")
 
 def return_etl_last_updated_date(db_session):
     execute_hook = False

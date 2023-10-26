@@ -66,7 +66,10 @@ class glassdoor_xpaths(Enum):
     XPATH_NUMBER_OF_ELEMENTS = '//*[@id="left-column"]/div[1]/h1'
     XPATH_NEXT_PAGE = '//*[@id="left-column"]/div[2]/div/button'
     XPATH_EXIT_LOGIN = '/html/body/div[11]/div[2]/div[1]/button'
-    
+    XPATH_COMP_NAME = '//*[@id="PageContent"]/div[1]/div[1]/div[2]/div/div/div[2]/div/div[1]/div[2]/div/div/div[1]/div'
+    XPATH_COMP_LINK = '//*[@id="PageContent"]/div[1]/div[1]/div[2]/div/div/div[2]/div/div[1]/div[1]/a'
+    XPATH_SALARY = '//*[@id="PageContent"]/div[1]/div[1]/div[2]/div/div/div[2]/div/div[1]/div[2]/div/div/div[4]/span'
+
 class glassdoor_classes(Enum):
     CLASS_JOB_TITLE        = 'JobCard_seoLink__r4HUE'
     CLASS_JOB_LOCATION     = 'JobCard_location__DX0MJ'
