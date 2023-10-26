@@ -69,33 +69,17 @@
 
   
 
-| Bins Map screen | Dashboard screen | Bin Management screen |
 
-| ---| ---| ---|
+ ![Landing](./readme/logger_screenshot.png) 
 
-| ![Landing](./readme/logger_screenshot.png) | ![Admin Dashboard](./readme/wireframes/web/dashboard.png) | ![User Management](./readme/wireframes/web/bin_crud.png) |
-
-  
-  
 
 ### Data Tables Schema
 
 <img  src="./readme/DB_Tables.png"  id="prototyping"/>
 
-| Map screen | Dashboard screen | Bin Management screen |
+Power BI Report Screenshots
 
-| ---| ---| ---|
-
-| ![Map](readme/mockups/web/map.png)| ![Map](./readme/mockups/web/dashboard.png)| ![Map](./readme/mockups/web/bin_crud.png)|
-
-  
-  
-
-| PowerBI SCREENSHOTS | Landing screen | Summary screen | etc ..... 
-
-| ---| ---| ---|
-
-| ![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)| 
+![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)
 
 <br><br>
 
@@ -113,11 +97,9 @@
 Interactive PowerBI Dashboard:
 A central dashboard where viewers can view:
 
-1. Economic Indicators: Graphs, charts and visualizations displaying key economic metrics over time.
-2. Sentiment Analysis: Representations of public sentiment about economic conditions, perhaps through heat maps, pie charts, or sentiment bars.
-3. Predictive Analysis: A visualization of the ML model's performance about he US econmoic recovery compared to actual data.
-4. Interactive filters: options to filter data by date, region, or specific economic indicatiors for customized views.
-
+1. Job Indicators: Graphs, charts and visualizations displaying key job requirements/quality metrics over time and titles.
+2. Interactive filters: options to filter data by date, skills, or specific filters for customized job searches.
+3. Ease of navigation: This report allows for a seamless navigation between different sections.
 <br>
 
 ## Backend
@@ -148,52 +130,6 @@ A central dashboard where viewers can view:
 | ---| ---|
 
 | ![Landing](./readme/implementation/dashboard.gif) | ![fsdaf](./readme/implementation/create_bin.gif) |
-
-  
-
-| Bins to Map Screen |
-
-| ---|
-
-| ![fsdaf](./readme/implementation/map.gif) |
-
-  
-  
-
-| Filter Bins Screen | Update Pickup Time Screen |
-
-| ---| ---|
-
-| ![Landing](./readme/implementation/filter_bins.gif) | ![fsdaf](./readme/implementation/update_pickup.gif) |
-
-  
-  
-
-| Announcements Screen |
-
-| ---|
-
-| ![fsdaf](./readme/implementation/message.gif)|
-
-  
-  
-
-| Change Map Screen | Edit Profile Screen |
-
-| ---| ---|
-
-| ![Landing](./readme/implementation/change_map.gif) | ![fsdaf](./readme/implementation/edit_profile.gif) |
-
-  
-  
-
-| Landing Screen |
-
-| ---|
-
-| ![fsdaf](./readme/implementation/landing.gif)|
-
-
 
 <!-- How to run -->
 
