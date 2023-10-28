@@ -47,18 +47,18 @@ class InputTypes(Enum):
     EXCEL = "Excel"
 
 class DESTINATION_SCHEMA(Enum):
-    DESTINATION_NAME = "dw_reporting_jobs_db"
+    DESTINATION_NAME = "dw_reporting"
 
 class AllStagingTables(Enum):
     tables = ['companies', 'comparison', 'details', 'geomap_interest', 'postings']
 
 #--------------- LOCAL PATHS ---------------#
-
-class CSV_FOLDER_PATH(Enum):
-    prehook_csvs = 'csvs'
-
-class SQL_PREHOOK_COMMANDS_PATH(Enum):
+class SQL_COMMANDS_PATH(Enum):
     path = 'sql_commands'
+
+class SQL_STAGES(Enum):
+    PREHOOK = 'V1'
+    HOOK = 'V2'
 
 #--------------- Glassdoor ---------------#
 
