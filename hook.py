@@ -115,9 +115,9 @@ def upload_dfs_into_pg(db_session):
 def update_etl(db_session, date):
     logging_main()
     try:
-        query = 'TRUNCATE TABLE stg_jobs_db.etl_checkpoint'
+        query = 'TRUNCATE TABLE dw_reporting_db.etl_checkpoint'
         execute_query(db_session, query)
-        query = f"INSERT INTO stg_jobs_db.etl_checkpoint (last_etl_date) VALUES ('{date}')"
+        query = f"INSERT INTO dw_reporting_db.etl_checkpoint (last_etl_date) VALUES ('{date}')"
         execute_query(db_session, query)
     except:
         print('error')
