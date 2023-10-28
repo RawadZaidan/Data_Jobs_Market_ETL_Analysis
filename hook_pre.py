@@ -3,8 +3,15 @@ from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA, SQL_PREHOOK_CO
 from database_handler import return_insert_into_sql_statement_from_df_stg
 from logging_handler import show_error_message
 import pandas as pd
+from lookup import DRIVE_CSVS
 import datetime
 import os
+
+def read_csv_files_from_drive(url):
+    file_id = url.split("/")[-2]
+    reading_link = f"https://drive.google.com/uc?id={file_id}"
+    df = pd.read_csv(reading_link)
+    return df
 
 def remove_spaces_from_columns_df(df):
     try:
@@ -43,27 +50,25 @@ def comparison_df_transform_salary(s):
     except:
         pass
 
-def concat_dfs_in_dir(folder_path):
+def concat_dfs(*args):
     try:
-        dataframes = []
-        for filename in os.listdir(folder_path):
-            if filename.endswith('.csv'):
-                file_path = os.path.join(folder_path, filename)
-                df = pd.read_csv(file_path)
-                dataframes.append(df)
-        df_concat = pd.concat(dataframes, ignore_index=True)
-        return df_concat
-    except:
-        return pd.DataFrame()
+        df_concatenated = pd.concat(args, ignore_index=True)
+        return df_concatenated
+    except Exception as error:
+        suffix = str(error)
+        error_prefix = ErrorHandling.CONCAT_DFS_ERROR
+        show_error_message(error_prefix.value, suffix)
 
-def return_geomap_df():
+def read_geomap_df_from_drive():
     try:
-        df1 = pd.read_csv('local_csvs/A_E_S_geoMap/geoMap_DA.csv')
-        df2 = pd.read_csv('local_csvs/A_E_S_geoMap/geoMap_DS.csv')
-        df3 = pd.read_csv('local_csvs/A_E_S_geoMap/geoMap_DE.csv')
-        df = df1.merge(df2, on='Country',how='outer').merge(df3, on='Country',how='outer')
-        df.fillna('No-Data', inplace=True)
-        return df
+        list_of_csvs = DRIVE_CSVS.geomap.value
+        df1 = read_csv_files_from_drive(list_of_csvs[0])
+        df2 = read_csv_files_from_drive(list_of_csvs[1])
+        df3 = read_csv_files_from_drive(list_of_csvs[2])
+
+        df_merged = df1.merge(df2, on='Country',how='outer').merge(df3, on='Country',how='outer')
+        df_merged.fillna(0, inplace=True)
+        return df_merged
     except:
         return pd.DataFrame()
 
@@ -80,7 +85,7 @@ def fix_posting_date(date):
 
 def return_local_csvs_concated():
     try:
-        df_companies = concat_dfs_in_dir('local_csvs/company_info/')
+        df_companies = concat_dfs(read_csv_files_from_drive("https://drive.google.com/file/d/1cnH7hmQEneOIYR8QoT7AstSEqptd-zdo/view?usp=drive_link"), read_csv_files_from_drive("https://drive.google.com/file/d/1XqRTnyMWhws6yGnyuCN7DvPMVl5vIgWS/view?usp=drive_link"))
         df_postings = concat_dfs_in_dir('local_csvs/jobs/')
         df_details = concat_dfs_in_dir('local_csvs/job_details/')
         df_comparison = concat_dfs_in_dir('local_csvs/analyst_engineer_scientist/')
@@ -109,7 +114,7 @@ def prehook_local_files_into_pg(db_session):
     try:
         df_companies, df_postings, df_details, df_comparison,df_interest_timeline = return_local_csvs_concated()
         df_companies, df_postings, df_details, df_comparison = clean_before_hook(df_companies, df_postings, df_details, df_comparison)
-        df_geomap = return_geomap_df()
+        df_geomap = read_geomap_df_from_drive()
         dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details,
             'comparison':df_comparison, 'geomap_interest':df_geomap, 'comparison_timeline': df_interest_timeline}    
         for df_name, df in dfs.items():
