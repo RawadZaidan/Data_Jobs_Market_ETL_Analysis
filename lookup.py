@@ -131,7 +131,7 @@ class DRIVE_CSVS(Enum):
     company_info = ['https://drive.google.com/file/d/1cnH7hmQEneOIYR8QoT7AstSEqptd-zdo/view?usp=drive_link',
                     'https://drive.google.com/file/d/1XqRTnyMWhws6yGnyuCN7DvPMVl5vIgWS/view?usp=drive_link']
     
-    analyst_engineer_scientist_interest = ['https://drive.google.com/file/d/13HeEB7AtaZhPZXx3mxp2q864fh8bhW9R/view?usp=drive_link',
+    comparison = ['https://drive.google.com/file/d/13HeEB7AtaZhPZXx3mxp2q864fh8bhW9R/view?usp=drive_link',
                                            'https://drive.google.com/file/d/1Y41v0unHa70pYKZxSmkymed5Difhp9rY/view?usp=drive_link',
                                            'https://drive.google.com/file/d/1QPP2UAupym0PLR1sSZda4FX8ztxtIlwW/view?usp=drive_link']
     
@@ -141,6 +141,6 @@ class DRIVE_CSVS(Enum):
                    'https://drive.google.com/file/d/1R6XdrnEU9KsEAy-wuYjlmjrt8Hk55TAO/view?usp=drive_link',
                    'https://drive.google.com/file/d/1H9Nys7uQn4evF08xBDtOIMC4wwSkVjVJ/view?usp=drive_link']
     
-    jobs = ['https://drive.google.com/file/d/1SMGHnUbzSrDWSRx7eBY_7sdIOfSX2BRm/view?usp=drive_link',
+    postings = ['https://drive.google.com/file/d/1SMGHnUbzSrDWSRx7eBY_7sdIOfSX2BRm/view?usp=drive_link',
             'https://drive.google.com/file/d/136uW7mZq50L9pb-yqe0qhs7fQFj0dpr0/view?usp=drive_link',
             'https://drive.google.com/file/d/1Rp_VV_Xpn7DpjhH4583M3Gv-EnuMbB6B/view?usp=drive_link']

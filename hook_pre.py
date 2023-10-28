@@ -7,6 +7,10 @@ from lookup import DRIVE_CSVS
 import datetime
 import os
 
+def concat_dfs(*args):
+    df_concatenated = pd.concat(args, ignore_index=True)
+    return df_concatenated
+
 def read_csv_files_from_drive(url):
     file_id = url.split("/")[-2]
     reading_link = f"https://drive.google.com/uc?id={file_id}"
@@ -83,13 +87,21 @@ def fix_posting_date(date):
     except:
         print('error fixing date in fix_posting_date function')
 
+def return_concatenated_df_from_drive(lookup_list_of_urls): 
+    dfs = []
+    for link in lookup_list_of_urls:
+        df = read_csv_files_from_drive(link)
+        dfs.append(df)
+    final = pd.concat(dfs, ignore_index=True)
+    return final 
+
 def return_local_csvs_concated():
     try:
-        df_companies = concat_dfs(read_csv_files_from_drive("https://drive.google.com/file/d/1cnH7hmQEneOIYR8QoT7AstSEqptd-zdo/view?usp=drive_link"), read_csv_files_from_drive("https://drive.google.com/file/d/1XqRTnyMWhws6yGnyuCN7DvPMVl5vIgWS/view?usp=drive_link"))
-        df_postings = concat_dfs_in_dir('local_csvs/jobs/')
-        df_details = concat_dfs_in_dir('local_csvs/job_details/')
-        df_comparison = concat_dfs_in_dir('local_csvs/analyst_engineer_scientist/')
-        df_interest_timeline = concat_dfs_in_dir('local_csvs/interest_timeline')
+        df_companies = return_concatenated_df_from_drive(DRIVE_CSVS.company_info.value)
+        df_postings = return_concatenated_df_from_drive(DRIVE_CSVS.postings.value)
+        df_details = return_concatenated_df_from_drive(DRIVE_CSVS.job_details.value)
+        df_comparison = return_concatenated_df_from_drive(DRIVE_CSVS.comparison.value)
+        df_interest_timeline = return_concatenated_df_from_drive(DRIVE_CSVS.interest_timeline.value)
         return df_companies, df_postings, df_details, df_comparison,df_interest_timeline
     except:
         return pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame(),pd.DataFrame()

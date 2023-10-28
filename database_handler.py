@@ -2,18 +2,11 @@ from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA
 from logging_handler import show_error_message
 import pandas as pd
 import psycopg2
-import pickle
+import json
 
-# Load the db_pass variable back from the file using pickle.load
-with open("db_pass.pkl", "rb") as file:
-    db_pass = pickle.load(file)
-
-config_dict = {
-    "host"      : "localhost",
-    "database"  : "Jobs_DB",
-    "user"      : "postgres",
-    "password"  : db_pass
-}
+#The config_dict will have the following format: {"host": local, "database": database_name, "user": usually postgres, "password": your_password}
+with open("config.json", "r") as json_file:
+    config_dict = json.load(json_file)
 
 def create_connection():
     db_session = None
@@ -157,7 +150,6 @@ def return_create_statement_from_df_fact(dataframe, table_name, schema_name=DEST
     create_index_statement = ""
     return create_table_statemnt
 
-# error handling + logging missing
 def return_insert_into_sql_statement_from_df(dataframe, schema_name, table_name):
     try:
         columns = ', '.join(dataframe.columns)
