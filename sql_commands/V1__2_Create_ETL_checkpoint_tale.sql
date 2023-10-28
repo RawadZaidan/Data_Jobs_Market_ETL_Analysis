@@ -1,0 +1,1 @@
+Create TABLE IF NOT EXISTS dw_reporting.etl_checkpoint (last_etl_date date);

@@ -47,7 +47,7 @@ class InputTypes(Enum):
     EXCEL = "Excel"
 
 class DESTINATION_SCHEMA(Enum):
-    DESTINATION_NAME = "stg_jobs_db"
+    DESTINATION_NAME = "dw_reporting_jobs_db"
 
 class AllStagingTables(Enum):
     tables = ['companies', 'comparison', 'details', 'geomap_interest', 'postings']

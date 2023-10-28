@@ -1,1 +1,0 @@
-Create SCHEMA IF NOT EXISTS stg_jobs_db

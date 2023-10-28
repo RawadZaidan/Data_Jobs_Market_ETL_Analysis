@@ -1,6 +1,6 @@
 -- Alter before runs 
 
-ALTER TABLE stg_jobs_db.stg_comparison
+ALTER TABLE stg_production.stg_comparison
 ADD COLUMN IF NOT EXISTS id SERIAL PRIMARY KEY;
 
 --------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ ADD COLUMN IF NOT EXISTS id SERIAL PRIMARY KEY;
 
 -- DONE : Dim, daily jobs company info
 
-CREATE TABLE IF NOT EXISTS jobs_db.dim_companies 
+CREATE TABLE IF NOT EXISTS production.dim_companies 
 (
     company_id TEXT PRIMARY KEY,
     company_name TEXT,
@@ -17,15 +17,15 @@ CREATE TABLE IF NOT EXISTS jobs_db.dim_companies
     size TEXT,
     direct_link TEXT
 );
-CREATE INDEX IF NOT EXISTS idx_company_id ON jobs_db.dim_companies(company_id);
-INSERT INTO jobs_db.dim_companies (company_id, company_name, industry, size, direct_link) 
+CREATE INDEX IF NOT EXISTS idx_company_id ON production.dim_companies(company_id);
+INSERT INTO production.dim_companies (company_id, company_name, industry, size, direct_link) 
 SELECT DISTINCT ON (c.company_id)
     c.company_id, 
     c.company_name, 
     c.industry, 
     c.size, 
     c.direct_link 
-FROM stg_jobs_db.stg_companies AS c
+FROM stg_production.stg_companies AS c
 ON CONFLICT (company_id)
 DO UPDATE 
 SET 
@@ -36,7 +36,7 @@ SET
 
 -- DONE : DIM daily jobs 
 
-CREATE TABLE IF NOT EXISTS jobs_db.dim_daily_jobs 
+CREATE TABLE IF NOT EXISTS production.dim_daily_jobs 
 (
     id TEXT PRIMARY KEY,
     title TEXT,
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS jobs_db.dim_daily_jobs
     description TEXT
 );
 
-CREATE INDEX IF NOT EXISTS idx_id ON jobs_db.dim_daily_jobs(id);
-INSERT INTO jobs_db.dim_daily_jobs (id, title, location, source, company_name, link, description) 
+CREATE INDEX IF NOT EXISTS idx_id ON production.dim_daily_jobs(id);
+INSERT INTO production.dim_daily_jobs (id, title, location, source, company_name, link, description) 
 SELECT 
     DISTINCT ON (s.id) 
 	s.id,
@@ -58,8 +58,8 @@ SELECT
     s.company_name,
 	p.link,
     s.description 
-FROM stg_jobs_db.stg_details AS s
-INNER JOIN stg_jobs_db.stg_postings AS p
+FROM stg_production.stg_details AS s
+INNER JOIN stg_production.stg_postings AS p
 ON s.id = p.id
 ON CONFLICT (id)
 DO UPDATE SET 
@@ -71,7 +71,7 @@ DO UPDATE SET
     description = excluded.description;
 
 -- DONE : Dim comparison
-CREATE TABLE IF NOT EXISTS jobs_db.dim_comparison 
+CREATE TABLE IF NOT EXISTS production.dim_comparison 
 (
     id TEXT PRIMARY KEY,
     company_name TEXT,
@@ -86,8 +86,8 @@ CREATE TABLE IF NOT EXISTS jobs_db.dim_comparison
 	job_description TEXT
 );
 
-CREATE INDEX IF NOT EXISTS idx_id ON jobs_db.dim_comparison(id);
-INSERT INTO jobs_db.dim_comparison (id,company_name,rating,location,headquarters,type_of_ownership,
+CREATE INDEX IF NOT EXISTS idx_id ON production.dim_comparison(id);
+INSERT INTO production.dim_comparison (id,company_name,rating,location,headquarters,type_of_ownership,
 									industry, sector, revenue, tag, job_description) 
 SELECT DISTINCT ON (s.id)
     s.id,
@@ -101,7 +101,7 @@ SELECT DISTINCT ON (s.id)
 	s.revenue, 
 	s.tag, 
 	s.job_description
-FROM stg_jobs_db.stg_comparison AS s
+FROM stg_production.stg_comparison AS s
 ON CONFLICT (id)
 DO UPDATE SET 
     company_name = excluded.company_name,
@@ -119,7 +119,7 @@ DO UPDATE SET
 -- Create Fact Tables
 
 -- Fact, Daily Jobs
-CREATE TABLE IF NOT EXISTS jobs_db.fact_daily_jobs (
+CREATE TABLE IF NOT EXISTS production.fact_daily_jobs (
     id TEXT PRIMARY KEY,
     posting_date TEXT,
     company_id TEXT,
@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS jobs_db.fact_daily_jobs (
     mid BOOL,
     senior BOOL
 );
-CREATE INDEX IF NOT EXISTS idx_id ON jobs_db.fact_daily_jobs(id);
-INSERT INTO jobs_db.fact_daily_jobs (id, posting_date, company_id, min_yearly_salary, max_yearly_salary, company_link,
+CREATE INDEX IF NOT EXISTS idx_id ON production.fact_daily_jobs(id);
+INSERT INTO production.fact_daily_jobs (id, posting_date, company_id, min_yearly_salary, max_yearly_salary, company_link,
     python, r, sql, scala, tableau, power_bi, mysql, postgresql, nosql, etl, dax, aws, azure, remote, hybrid, on_site, junior, mid, senior)
 SELECT DISTINCT ON (s.id)
     s.id,
@@ -175,8 +175,8 @@ SELECT DISTINCT ON (s.id)
     s.junior,
     s.mid,
     s.senior
-FROM stg_jobs_db.stg_details AS s
-INNER JOIN stg_jobs_db.stg_postings AS p
+FROM stg_production.stg_details AS s
+INNER JOIN stg_production.stg_postings AS p
 ON s.id = p.id
 ON CONFLICT (id)
 DO UPDATE SET
@@ -205,23 +205,23 @@ DO UPDATE SET
     mid = excluded.mid,
     senior = excluded.senior;
 
-UPDATE jobs_db.fact_daily_jobs
+UPDATE production.fact_daily_jobs
 SET posting_date = TO_DATE(posting_date, 'DD/MM/YYYY')
 WHERE posting_date ~ E'^\\d{2}/\\d{2}/\\d{4}$';
 
-UPDATE jobs_db.fact_daily_jobs
+UPDATE production.fact_daily_jobs
 SET max_yearly_salary = CASE
     WHEN max_yearly_salary < min_yearly_salary THEN min_yearly_salary
     ELSE max_yearly_salary
 END;
 
-UPDATE jobs_db.fact_daily_jobs
+UPDATE production.fact_daily_jobs
 SET max_yearly_salary = CASE
     WHEN max_yearly_salary < 299 THEN max_yearly_salary * 1000
     ELSE max_yearly_salary
 END; 
 
-UPDATE jobs_db.fact_daily_jobs
+UPDATE production.fact_daily_jobs
 SET min_yearly_salary = CASE
     WHEN min_yearly_salary < 299 THEN min_yearly_salary * 1000
     ELSE min_yearly_salary
@@ -229,31 +229,31 @@ END;
 
 -- Fact Geomap
 
-UPDATE stg_jobs_db.stg_geomap_interest
+UPDATE stg_production.stg_geomap_interest
 SET data_analyst = REPLACE(data_analyst, 'No-Data', '0')
 WHERE data_analyst LIKE '%No-Data%';
 
-UPDATE stg_jobs_db.stg_geomap_interest
+UPDATE stg_production.stg_geomap_interest
 SET data_science = REPLACE(data_science, 'No-Data', '0')
 WHERE data_science LIKE '%No-Data%';
 
-UPDATE stg_jobs_db.stg_geomap_interest
+UPDATE stg_production.stg_geomap_interest
 SET data_engineer = REPLACE(data_engineer, 'No-Data', '0')
 WHERE data_engineer LIKE '%No-Data%';
 
-CREATE TABLE IF NOT EXISTS jobs_db.fact_geomap_interest (
+CREATE TABLE IF NOT EXISTS production.fact_geomap_interest (
     country TEXT PRIMARY KEY,
     data_analyst INT,
     data_scientist INT,
     data_engineer INT
 );
-CREATE INDEX IF NOT EXISTS idx_country ON jobs_db.fact_geomap_interest(country);
-INSERT INTO jobs_db.fact_geomap_interest (country, data_analyst, data_scientist, data_engineer)
+CREATE INDEX IF NOT EXISTS idx_country ON production.fact_geomap_interest(country);
+INSERT INTO production.fact_geomap_interest (country, data_analyst, data_scientist, data_engineer)
 SELECT DISTINCT ON (country) country, 
 	ROUND(data_analyst::NUMERIC)::INT AS data_analysis,
 	ROUND(data_science::NUMERIC)::INT AS data_science,
 	ROUND(data_engineer::NUMERIC)::INT AS data_engineering
-FROM stg_jobs_db.stg_geomap_interest
+FROM stg_production.stg_geomap_interest
 ON CONFLICT (country) DO UPDATE
 SET
     data_analyst = excluded.data_analyst,
@@ -262,7 +262,7 @@ SET
 
 -- Fact comparison 
 
-CREATE TABLE IF NOT EXISTS jobs_db.fact_comparison (
+CREATE TABLE IF NOT EXISTS production.fact_comparison (
     id INT UNIQUE PRIMARY KEY,
     job_title TEXT,
     lower_salary DOUBLE PRECISION,
@@ -275,10 +275,10 @@ CREATE TABLE IF NOT EXISTS jobs_db.fact_comparison (
     tag TEXT
 );
 
-CREATE INDEX IF NOT EXISTS idx_id ON jobs_db.fact_comparison(id);
-INSERT INTO jobs_db.fact_comparison (id, job_title, lower_salary, higher_salary, company_name, rating, size, founded, revenue, tag)
+CREATE INDEX IF NOT EXISTS idx_id ON production.fact_comparison(id);
+INSERT INTO production.fact_comparison (id, job_title, lower_salary, higher_salary, company_name, rating, size, founded, revenue, tag)
 SELECT DISTINCT ON (id) id, job_title, lower_salary, higher_salary, company_name, rating, size, founded, revenue, tag
-FROM stg_jobs_db.stg_comparison
+FROM stg_production.stg_comparison
 ON CONFLICT (id) DO UPDATE
 SET
     job_title = excluded.job_title,
@@ -293,20 +293,20 @@ SET
 
 -- Fact timeline interest 
 
-CREATE TABLE IF NOT EXISTS jobs_db.fact_comparison_timeline (
+CREATE TABLE IF NOT EXISTS production.fact_comparison_timeline (
     week DATE UNIQUE PRIMARY KEY,
     data_analyst INT,
     data_scientist INT,
     data_engineer INT
 );
 
-CREATE INDEX IF NOT EXISTS idx_week ON jobs_db.fact_comparison_timeline(week);
-INSERT INTO jobs_db.fact_comparison_timeline (week, data_analyst, data_scientist, data_engineer)
+CREATE INDEX IF NOT EXISTS idx_week ON production.fact_comparison_timeline(week);
+INSERT INTO production.fact_comparison_timeline (week, data_analyst, data_scientist, data_engineer)
 SELECT  DISTINCT ON (Date(week)) DATE(week), 
         CAST(data_analyst AS INT), 
         CAST(data_scientist AS INT), 
         CAST(data_engineer AS INT)
-FROM stg_jobs_db.stg_comparison_timeline
+FROM stg_production.stg_comparison_timeline
 ON CONFLICT (week) DO UPDATE
 SET
     data_analyst = excluded.data_analyst,
