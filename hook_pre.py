@@ -1,6 +1,6 @@
-from database_handler import execute_query, create_connection,return_create_statement_from_df_stg
-from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA, SQL_PREHOOK_COMMANDS_PATH
-from database_handler import return_insert_into_sql_statement_from_df_stg
+from database_handler import execute_query, create_connection,return_create_statement_from_df
+from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA, SQL_COMMANDS_PATH
+from database_handler import return_insert_into_sql_statement_from_df
 from logging_handler import show_error_message
 import pandas as pd
 from lookup import DRIVE_CSVS
@@ -28,7 +28,7 @@ def remove_spaces_from_columns_df(df):
         error_prefix = ErrorHandling.REMOVING_SPACES_COLUMN_ERROR.value
         show_error_message(error_prefix, suffix)
 
-def execute_sql_folder(db_session, sql_command_directory_path='sql_commands'):
+def execute_sql_folder(db_session, sql_command_directory_path=SQL_COMMANDS_PATH.path.value):
     try:
         sql_files = [sqlfile for sqlfile in os.listdir(sql_command_directory_path) if sqlfile.endswith('.sql')]
         sorted_sql_files = sorted(sql_files)
@@ -131,9 +131,9 @@ def prehook_local_files_into_pg(db_session):
             'comparison':df_comparison, 'geomap_interest':df_geomap, 'comparison_timeline': df_interest_timeline}    
         for df_name, df in dfs.items():
             print('Doing DF', df_name)
-            stmnt = return_create_statement_from_df_stg(df, df_name)
+            stmnt = return_create_statement_from_df(dataframe=df,prefix='stg_', table_name=df_name)
             execute_query(db_session, stmnt)
-            queries = return_insert_into_sql_statement_from_df_stg(df, df_name)
+            queries = return_insert_into_sql_statement_from_df(dataframe=df, table_name=df_name,prefix='stg_')
             for query in queries:
                 execute_query(db_session, query)
             print('DONE: ',df_name,'. NO ERRORS')

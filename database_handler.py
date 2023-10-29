@@ -68,8 +68,9 @@ def execute_query(db_session, query):
         return_val = error_prefix
         suffix = str(e)
         show_error_message(error_prefix.value, suffix)
-    
-def return_create_statement_from_df(dataframe,schema_name, table_name):
+
+#----------------------------------------------------------
+def return_create_statement_from_df(dataframe,table_name,prefix ='',schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
     type_mapping = {
         'int64': 'INT',
         'int32': 'INT',
@@ -90,89 +91,15 @@ def return_create_statement_from_df(dataframe,schema_name, table_name):
         sql_type = type_mapping.get(str(dtype), 'TEXT')
         fields.append(f"{column} {sql_type}")
     
-    create_table_statemnt = f"CREATE TABLE IF NOT EXISTS {schema_name}.{table_name} (\n"
+    create_table_statemnt = f"CREATE TABLE IF NOT EXISTS {schema_name}.{prefix}{table_name} (\n"
     create_table_statemnt += ",\n".join(fields)
     create_table_statemnt += "\n);"
     create_index_statement = ""
     return create_table_statemnt
 
-def return_create_statement_from_df_stg(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
-    type_mapping = {
-        'int64': 'INT',
-        'int32': 'INT',
-        'int16': 'SMALLINT',
-        'int8': 'TINYINT',
-        'float64': 'FLOAT',
-        'float32': 'REAL',
-        'datetime64[ns]': 'TIMESTAMP',
-        'datetime64[ns, UTC]': 'TIMESTAMP WITH TIME ZONE',
-        'date': 'DATE',
-        'time': 'TIME',
-        'bool': 'BOOLEAN',
-        'object': 'TEXT',
-        'str': 'TEXT'
-    }
-    fields = []
-    for column, dtype in dataframe.dtypes.items():
-        sql_type = type_mapping.get(str(dtype), 'TEXT')
-        fields.append(f"{column} {sql_type}")
-    
-    create_table_statemnt = f"CREATE TABLE IF NOT EXISTS {schema_name}.stg_{table_name} (\n "
-    create_table_statemnt += ", \n ".join(fields)
-    create_table_statemnt += " \n );"
-    create_index_statement = ""
-    return create_table_statemnt
+#---------------------------------------------------------------------------
 
-def return_create_statement_from_df_fact(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
-    type_mapping = {
-        'int64': 'INT',
-        'int32': 'INT',
-        'int16': 'SMALLINT',
-        'int8': 'TINYINT',
-        'float64': 'FLOAT',
-        'float32': 'REAL',
-        'datetime64[ns]': 'TIMESTAMP',
-        'datetime64[ns, UTC]': 'TIMESTAMP WITH TIME ZONE',
-        'date': 'DATE',
-        'time': 'TIME',
-        'bool': 'BOOLEAN',
-        'object': 'TEXT',
-        'str': 'TEXT'
-    }
-    fields = []
-    for column, dtype in dataframe.dtypes.items():
-        sql_type = type_mapping.get(str(dtype), 'TEXT')
-        fields.append(f"{column} {sql_type}")
-    
-    create_table_statemnt = f"CREATE TABLE IF NOT EXISTS {schema_name}.fact_{table_name} (\n "
-    create_table_statemnt += ", \n ".join(fields)
-    create_table_statemnt += " \n );"
-    create_index_statement = ""
-    return create_table_statemnt
-
-def return_insert_into_sql_statement_from_df(dataframe, schema_name, table_name):
-    try:
-        columns = ', '.join(dataframe.columns)
-        insert_statement_list = []
-        for _, row in dataframe.iterrows():
-            value_strs = []
-            for val in row.values:
-                if pd.isna(val):
-                    value_strs.append("NULL")
-                elif isinstance(val, (str)):
-                    value_strs.append(f"'{val}'")
-                else:
-                    value_strs.append(f"'{val}'")
-            values = ', '.join(value_strs)
-            insert_statement = f'INSERT INTO {schema_name}.{table_name} ({columns}) VALUES ({values});'
-            insert_statement_list.append(insert_statement)
-        return insert_statement_list
-    except Exception as e:
-        error_string_prefix = ErrorHandling.DB_RETURN_INSERT_INTO_SQL_STMT_ERROR.value
-        error_string_suffix = str(e)
-        show_error_message(error_string_prefix, error_string_suffix)
-
-def return_insert_into_sql_statement_from_df_stg(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
+def return_insert_into_sql_statement_from_df(dataframe, table_name,prefix = '', schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
     try:
         columns = ', '.join(dataframe.columns)
         insert_statement_list = []
@@ -187,37 +114,13 @@ def return_insert_into_sql_statement_from_df_stg(dataframe, table_name, schema_n
                 else:
                     value_strs.append(f"'{val}'")
             values = ', '.join(value_strs)
-            insert_statement = f'INSERT INTO {schema_name}.stg_{table_name} ({columns}) VALUES ({values});'
+            insert_statement = f'INSERT INTO {schema_name}.{prefix}{table_name} ({columns}) VALUES ({values});'
             insert_statement_list.append(insert_statement)
         return insert_statement_list
     except Exception as e:
         error_string_prefix = ErrorHandling.DB_RETURN_INSERT_INTO_SQL_STMT_ERROR.value
         error_string_suffix = str(e)
         show_error_message(error_string_prefix, error_string_suffix)
-
-def return_insert_into_sql_statement_from_df_fact(dataframe, table_name, schema_name=DESTINATION_SCHEMA.DESTINATION_NAME.value):
-    try:
-        columns = ', '.join(dataframe.columns)
-        insert_statement_list = []
-        for _, row in dataframe.iterrows():
-            value_strs = []
-            for val in row.values:
-                if pd.isna(val):
-                    value_strs.append("NULL")
-                elif isinstance(val, (str)):
-                    val_escaped = val.replace("'", "''")
-                    value_strs.append(f"'{val_escaped}'")
-                else:
-                    value_strs.append(f"'{val}'")
-            values = ', '.join(value_strs)
-            insert_statement = f'INSERT INTO {schema_name}.fact_{table_name} ({columns}) VALUES ({values});'
-            insert_statement_list.append(insert_statement)
-        return insert_statement_list
-    except Exception as e:
-        error_string_prefix = ErrorHandling.DB_RETURN_INSERT_INTO_SQL_STMT_ERROR.value
-        error_string_suffix = str(e)
-        show_error_message(error_string_prefix, error_string_suffix)
-
 
 def close_connection(db_session):
     try:

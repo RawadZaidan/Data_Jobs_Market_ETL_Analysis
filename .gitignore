@@ -1,2 +1,4 @@
 open_ai_key.pkl
 config.json
+__pycache__/
+tester.ipynb

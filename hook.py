@@ -1,9 +1,8 @@
-from ws import linkedin_final_df, linkedin_individual_iterate_and_get_df,linkedin_get_company_info, selenium_driver
-from database_handler import return_create_statement_from_df_stg,return_insert_into_sql_statement_from_df_stg
-from ws import glassdoor_final_df, glassdoor_ind_jobs_df, glassdoor_companies_info_df
-from hook_pre import comparison_df_transform_salary,remove_spaces_from_columns_df
+from web_scraping_handler import linkedin_final_df, linkedin_individual_iterate_and_get_df,linkedin_get_company_info, selenium_driver
+from database_handler import return_create_statement_from_df,return_insert_into_sql_statement_from_df
+from web_scraping_handler import glassdoor_final_df, glassdoor_ind_jobs_df, glassdoor_companies_info_df
 from database_handler import create_connection, return_data_as_df
-from ws import nakuri_get_all_postings,  nakuri_get_job_details
+from web_scraping_handler import nakuri_get_all_postings,  nakuri_get_job_details
 from logging_handler import show_error_message
 from lookup import InputTypes, ErrorHandling,SQL_STAGES, DESTINATION_SCHEMA,SQL_COMMANDS_PATH
 from database_handler import execute_query
@@ -105,9 +104,9 @@ def upload_dfs_into_pg(db_session):
     dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details}    
     for df_name, df in dfs.items():
         print('Doing DF', df_name)
-        stmnt = return_create_statement_from_df_stg(df, df_name)
+        stmnt = return_create_statement_from_df(dataframe=df,prefix='stg_', table_name=df_name)
         execute_query(db_session, stmnt)
-        queries = return_insert_into_sql_statement_from_df_stg(df, df_name)
+        queries = return_insert_into_sql_statement_from_df(dataframe=df, table_name=df_name,prefix='stg_')
         for query in queries:
             execute_query(db_session, query)
         print('DONE DF')
