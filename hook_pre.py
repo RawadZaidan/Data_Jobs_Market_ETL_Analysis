@@ -2,7 +2,7 @@ from database_handler import execute_query, create_connection,return_create_stat
 from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA, SQL_COMMANDS_PATH
 from database_handler import return_insert_into_sql_statement_from_df
 from logging_handler import show_error_message
-from lookup import DRIVE_CSVS
+from lookup import DRIVE_CSVS, SQL_STAGES
 import pandas as pd
 import datetime
 import logging
@@ -35,9 +35,9 @@ def remove_spaces_from_columns_df(df):
         error_prefix = ErrorHandling.REMOVING_SPACES_COLUMN_ERROR.value
         show_error_message(error_prefix, suffix)
 
-def execute_sql_folder(db_session, sql_command_directory_path=SQL_COMMANDS_PATH.path.value):
+def execute_sql_folder(db_session,stage, sql_command_directory_path=SQL_COMMANDS_PATH.path.value):
     try:
-        sql_files = [sqlfile for sqlfile in os.listdir(sql_command_directory_path) if sqlfile.endswith('.sql')]
+        sql_files = [sqlfile for sqlfile in os.listdir(sql_command_directory_path) if sqlfile.endswith('.sql') and sqlfile.startswith(stage)]
         sorted_sql_files = sorted(sql_files)
         errors = []
 
@@ -152,7 +152,7 @@ def prehook():
 
     db_session = create_connection()
 
-    execute_sql_folder(db_session)
+    execute_sql_folder(db_session, stage=SQL_STAGES.PREHOOK.value)
     logging.info('Pre_Hook: SQL folder executed')
 
     prehook_local_files_into_pg(db_session)
