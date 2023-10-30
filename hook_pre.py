@@ -2,13 +2,22 @@ from database_handler import execute_query, create_connection,return_create_stat
 from lookup import ErrorHandling, InputTypes, DESTINATION_SCHEMA, SQL_COMMANDS_PATH
 from database_handler import return_insert_into_sql_statement_from_df
 from logging_handler import show_error_message
-import pandas as pd
 from lookup import DRIVE_CSVS
+import pandas as pd
 import datetime
+import logging
 import os
 
-def concat_dfs(*args):
-    df_concatenated = pd.concat(args, ignore_index=True)
+def logging_main() -> None:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(message)s",  # Fix the typo here
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="log.txt"
+    )
+
+def concat_dfs(*dfs):
+    df_concatenated = pd.concat(dfs, ignore_index=True)
     return df_concatenated
 
 def read_csv_files_from_drive(url):
@@ -147,5 +156,7 @@ def prehook():
     db_session = create_connection()
 
     execute_sql_folder(db_session)
+    logging.info('Pre_Hook: SQL folder executed')
 
     prehook_local_files_into_pg(db_session)
+    logging.info('Pre_Hook: CSVs read and uploaded to database')

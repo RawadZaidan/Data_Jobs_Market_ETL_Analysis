@@ -1,10 +1,10 @@
 from web_scraping_handler import linkedin_final_df, linkedin_individual_iterate_and_get_df,linkedin_get_company_info, selenium_driver
-from database_handler import return_create_statement_from_df,return_insert_into_sql_statement_from_df
 from web_scraping_handler import glassdoor_final_df, glassdoor_ind_jobs_df, glassdoor_companies_info_df
-from database_handler import create_connection, return_data_as_df
-from web_scraping_handler import nakuri_get_all_postings,  nakuri_get_job_details
-from logging_handler import show_error_message
+from database_handler import return_create_statement_from_df,return_insert_into_sql_statement_from_df
 from lookup import InputTypes, ErrorHandling,SQL_STAGES, DESTINATION_SCHEMA,SQL_COMMANDS_PATH
+from web_scraping_handler import nakuri_get_all_postings,  nakuri_get_job_details
+from database_handler import create_connection, return_data_as_df
+from logging_handler import show_error_message
 from database_handler import execute_query
 from datetime import date
 import pandas as pd
@@ -15,7 +15,7 @@ import os
 def logging_main() -> None:
     logging.basicConfig(
         level=logging.DEBUG,
-        format="%(asctime)s %(levelname)s %(message)s",  # Fix the typo here
+        format="%(asctime)s %(levelname)s %(message)s", 
         datefmt="%Y-%m-%d %H:%M:%S",
         filename="log.txt"
     )
@@ -90,7 +90,6 @@ def clean_for_hook(df_companies, df_postings, df_details):
 
 def get_clean_new_data():
     try:
-        logging_main()
         df_companies, df_postings, df_details = get_all_new_data()
         logging.info('This is an info message: Hook - Got all Dfs of today')
         df_companies, df_postings, df_details = clean_for_hook(df_companies, df_postings, df_details)
@@ -112,41 +111,36 @@ def upload_dfs_into_pg(db_session):
         print('DONE DF')
 
 def update_etl(db_session, date):
-    logging_main()
     try:
         query = 'TRUNCATE TABLE dw_reporting.etl_checkpoint'
         execute_query(db_session, query)
         query = f"INSERT INTO dw_reporting.etl_checkpoint (last_etl_date) VALUES ('{date}')"
         execute_query(db_session, query)
+        logging.info(f'Updated ETL checkpoint date to: {date}')
     except:
         print('error')
         logging.critical("This is a critical message: Hook - Error updating etl last_run_date")
 
 def upload_after_etl_check(db_session):
-    logging_main()
     date, check = return_etl_last_updated_date(db_session)
-    print(date, check)
-    # execute_sql_folder(db_session)
     if check:
         update_etl(db_session, date)
-        logging.info('This is an info message: ETL last_update UPDATED')
+        logging.info('Hook - ETL last_update UPDATED')
         upload_dfs_into_pg(db_session)
-        logging.info('This is an info message:Uploaded dataframes into pgadmin')
+        logging.info('Hook - Uploaded dataframes into pgadmin')
         execute_sql_folder(db_session, stage=SQL_STAGES.HOOK.value)
-        logging.info('This is an info message: SQL folder executed')
+        logging.info('Hook - SQL folder executed')
 
 #-----------------------------------------------------------#
 # Final steps: piecing everything together
 
 def hook():
     try:
-        logging_main()
-
         db_session = create_connection()
-        logging.info('This is an info message: Hook - Created DB_SESSION')
+        logging.info('Hook - Created DB_SESSION')
 
         upload_after_etl_check(db_session)
-        logging.info('This is an info message: Hook - Done')
+        logging.info('Hook - Done')
     except Exception as error:
         suffix = str(error)
         error_prefix = ErrorHandling.HOOK_ERROR.value
