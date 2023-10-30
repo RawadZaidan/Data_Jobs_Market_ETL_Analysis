@@ -22,7 +22,7 @@ def logging_main() -> None:
 
 def return_etl_last_updated_date(db_session):
     execute_hook = False
-    query = f"SELECT * FROM {DESTINATION_SCHEMA.DESTINATION_NAME.value}.etl_checkpoint ORDER BY last_etl_date DESC LIMIT 1"
+    query = f"SELECT * FROM dw_reporting.etl_checkpoint"
     etl_df = return_data_as_df(
         file_executor= query,
         input_type= InputTypes.SQL,
@@ -125,6 +125,7 @@ def update_etl(db_session, date):
 def upload_after_etl_check(db_session):
     logging_main()
     date, check = return_etl_last_updated_date(db_session)
+    print(date, check)
     # execute_sql_folder(db_session)
     if check:
         update_etl(db_session, date)

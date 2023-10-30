@@ -156,11 +156,12 @@ def linkedin_individual_iterate_and_get_df(df):
                 elif len(salary) == 1:
                     lower = salary[0]
                     higher = salary[0]
+                elif len(salary)==0:
+                    lower,higher = 0, 0
                 else:
                     lower = None
                     higher = None
                 techs = find_technologies_in_string(digest)
-                # data
                 link = s.find_all("a", attrs={"data-tracking-control-name":"public_jobs_topcard_logo"})[0]
                 link = link.get("href")
                 data = {'ID':ID, 'source':SOURCE,'company_name':company_name,'company_id':company_id, 'min_yearly_salary':lower,
@@ -427,10 +428,10 @@ def nakuri_get_salary(salary):
             lower = int(int(match.group(1).replace(',', ''))*0.27*12)
             higher = int(int(match.group(2).replace(',', ''))*0.27*12)
         else:
-            lower,higher = 'N/A', 'N/A'
+            lower,higher = 0.0, 0.0
         return lower,higher
     except:
-        return 'N/A', 'N/A'
+        return 0.0, 0.0
 
 def nakuri_get_salary_final(driver):
     try:
@@ -440,8 +441,7 @@ def nakuri_get_salary_final(driver):
                 salary = el.text
         lower,higher = nakuri_get_salary(salary)
     except:
-        salary = 'N/A'
-        lower,higher = 'N/A', 'N/A'
+        lower,higher = 0.0, 0.0
     finally:
         return lower, higher
 
@@ -631,7 +631,7 @@ def glassdoor_return_yearly_lower(l):
         else:
             pass
     except:
-        return 'N/A'
+        return 0.0
 
 def glassdoor_return_yearly_higher(l):
     try:
@@ -649,7 +649,7 @@ def glassdoor_return_yearly_higher(l):
         else:
             pass
     except:
-        return 'N/A'
+        return 0.0
 
 def glassdoor_get_id(x):
     try:
