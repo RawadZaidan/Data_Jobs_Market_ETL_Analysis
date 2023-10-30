@@ -121,6 +121,12 @@ Power BI Report Preview
 
 <a  name="Demo"  ></a>
 <img  src="./readme/title5.svg" id="#demo"/>
+>Tech stacks used:
+
+ - Python
+ - SQL
+ - DAX
+ - PowerQuery
 
 > ETL performance - Logger view
 
