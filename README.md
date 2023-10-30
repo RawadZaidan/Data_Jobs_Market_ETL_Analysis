@@ -126,9 +126,7 @@ Power BI Report Screenshots
   
 ### Time for each run
 
-
-
- ![Landing](./readme/logger2.png) | ![fsdaf](./readme/logger1.png) |
+ ![Landing](./readme/logger1.png) | ![fsdaf](./readme/logger2.png) |
 
 On average, every ETL run takes around 20-30 minutes (also depends on internet speed)
 <!-- How to run -->
