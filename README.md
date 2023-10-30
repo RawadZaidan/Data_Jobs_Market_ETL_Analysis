@@ -40,20 +40,24 @@
 ### User Stories
 
   
-1. As a Data Engineer:
-	I want to automatically scrape various data jobs from reputable sources so that our dataset is always up-to-date.
-	I want to integrate different data sources seamlessly.
-	Ensure fault tolerance in our data pipelines, so that potential failures don't interrupt our analyses.
-	Get log.txt file that will showcase each step.
-2. As an Analyst:
-	I want to query the database.
-	I want to view the jobs analysis based on skill factors to understand the data job market better.
-	I want to visualize the data using PowerBI.
-3. As an HR:
-	I want to access a dataset that provides a holistic view of the data job market and know what to expect/describe in a vacancy post.
-	I want to compare different titles and their requirements/skills/compensation.
-4. As a Person interested in the data world:
-	I want to understand what to learn, what's in demand, different functions and job titles.
+1. **As a Data Engineer:**
+   - I want to automatically scrape various data jobs from reputable sources so that our dataset is always up-to-date.
+   - I want to integrate different data sources seamlessly.
+   - Ensure fault tolerance in our data pipelines, so that potential failures don't interrupt our analyses.
+   - Get a `log.txt` file that will showcase each step.
+
+2. **As an Analyst:**
+   - I want to query the database.
+   - I want to view the jobs analysis based on skill factors to understand the data job market better.
+   - I want to visualize the data using PowerBI.
+
+3. **As an HR:**
+   - I want to access a dataset that provides a holistic view of the data job market and know what to expect/describe in a vacancy post.
+   - I want to compare different titles and their requirements/skills/compensation.
+
+4. **As a Person interested in the data world:**
+   - I want to understand what to learn, what's in demand, different functions and job titles.
+
 
 
 <br><br>
@@ -63,14 +67,6 @@
 
 > We have designed our projects to webscrape, through an ETL project and including it in a PowerBI Sample Dashboard 
 
-  
-
-### Logger File
-
-  
-
-
- ![Landing](./readme/logger_screenshot.png) 
 
 
 ### Data Tables Schema
