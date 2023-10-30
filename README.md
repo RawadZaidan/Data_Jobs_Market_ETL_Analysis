@@ -100,9 +100,9 @@ A central dashboard where viewers can view:
 3. Ease of navigation: This report allows for a seamless navigation between different sections.
 <br>
 
-Power BI Report Screenshots
+Power BI Report Preview
 
-![VID](readme/video.mp4)
+![VID](readme/lapse.gif)
 ![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)
 
 ## Backend
