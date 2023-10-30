@@ -173,4 +173,5 @@ git clone https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis.git
 
 You should be able to check the screenshots file to see the ETL work and its timing .
 
-As for the dashboard access: Please use this link "public powerbi link" to access your data.
+Link to dashboard: https://app.powerbi.com/view?r=eyJrIjoiZjQ2NmIwZTgtMjhiMy00NmNhLThkMGYtOTkzMjM1ZjEwZTQ5IiwidCI6IjJhZDk2OTM0LTQzZTUtNDFjMi05NzYxLWYzMzVmZTIxNGNjMyIsImMiOjl9
+![POWERBI](https://app.powerbi.com/view?r=eyJrIjoiZjQ2NmIwZTgtMjhiMy00NmNhLThkMGYtOTkzMjM1ZjEwZTQ5IiwidCI6IjJhZDk2OTM0LTQzZTUtNDFjMi05NzYxLWYzMzVmZTIxNGNjMyIsImMiOjl9)
