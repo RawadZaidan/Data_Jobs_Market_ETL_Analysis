@@ -139,13 +139,12 @@ def prehook_local_files_into_pg(db_session):
         dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details,
             'comparison':df_comparison, 'geomap_interest':df_geomap, 'comparison_timeline': df_interest_timeline}    
         for df_name, df in dfs.items():
-            print('Doing DF', df_name)
             stmnt = return_create_statement_from_df(dataframe=df,prefix='stg_', table_name=df_name)
             execute_query(db_session, stmnt)
             queries = return_insert_into_sql_statement_from_df(dataframe=df, table_name=df_name,prefix='stg_')
             for query in queries:
                 execute_query(db_session, query)
-            print('DONE: ',df_name,'. NO ERRORS')
+            logging.info(f'Pre_Hook: Df:{df_name} is done.')
     except Exception as error:
         suffix = str(error)
         error_prefix = ErrorHandling.IMPORTING_LOCAL_CSVS_INTO_PG_ERROR.value

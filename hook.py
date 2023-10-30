@@ -102,13 +102,12 @@ def upload_dfs_into_pg(db_session):
     df_companies, df_postings, df_details = get_clean_new_data()
     dfs = {'companies': df_companies, 'postings': df_postings, 'details':df_details}    
     for df_name, df in dfs.items():
-        print('Doing DF', df_name)
         stmnt = return_create_statement_from_df(dataframe=df,prefix='stg_', table_name=df_name)
         execute_query(db_session, stmnt)
         queries = return_insert_into_sql_statement_from_df(dataframe=df, table_name=df_name,prefix='stg_')
         for query in queries:
             execute_query(db_session, query)
-        print('DONE DF')
+        logging.info('Hook: Df: {df_name} is done')
 
 def update_etl(db_session, date):
     try:

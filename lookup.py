@@ -132,8 +132,8 @@ class DRIVE_CSVS(Enum):
                     'https://drive.google.com/file/d/1XqRTnyMWhws6yGnyuCN7DvPMVl5vIgWS/view?usp=drive_link']
     
     comparison = ['https://drive.google.com/file/d/13HeEB7AtaZhPZXx3mxp2q864fh8bhW9R/view?usp=drive_link',
-                                           'https://drive.google.com/file/d/1Y41v0unHa70pYKZxSmkymed5Difhp9rY/view?usp=drive_link',
-                                           'https://drive.google.com/file/d/1QPP2UAupym0PLR1sSZda4FX8ztxtIlwW/view?usp=drive_link']
+                    'https://drive.google.com/file/d/1Y41v0unHa70pYKZxSmkymed5Difhp9rY/view?usp=drive_link',
+                    'https://drive.google.com/file/d/1QPP2UAupym0PLR1sSZda4FX8ztxtIlwW/view?usp=drive_link']
     
     interest_timeline = ['https://drive.google.com/file/d/1cSpgj75PTg6P21KY2-yDJumH1O1bBw1Z/view?usp=drive_link']
 

@@ -77,9 +77,7 @@
 
 <img  src="./readme/DB_Tables.png"  id="prototyping"/>
 
-Power BI Report Screenshots
 
-![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)
 
 <br><br>
 
@@ -101,6 +99,10 @@ A central dashboard where viewers can view:
 2. Interactive filters: options to filter data by date, skills, or specific filters for customized job searches.
 3. Ease of navigation: This report allows for a seamless navigation between different sections.
 <br>
+
+Power BI Report Screenshots
+
+![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)
 
 ## Backend
 
@@ -128,7 +130,7 @@ A central dashboard where viewers can view:
 
  ![Landing](./readme/logger2.png) | ![fsdaf](./readme/logger1.png) |
 
-On average, every ETL run takes around 40-60 minutes (also depends on internet speed)
+On average, every ETL run takes around 20-30 minutes (also depends on internet speed)
 <!-- How to run -->
 
 <a  name="run"  ></a>
@@ -169,12 +171,11 @@ git clone https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis.git
 
 -   Start the PostgreSQL server.
 -   Create a new database and user with the appropriate permissions and add your credentials.
--   Run the initialization script `python prehook.py`
 
 ### **Running the Backend**:
 
 **Start the Data Ingestion & ETL Process**:
-`python ETL.py`
+`python main_handler.py`
 
 You should be able to check the screenshots file to see the ETL work and its timing .
 

@@ -10,7 +10,7 @@ def etl():
     post_hook()
 
 # Schedule the job to be run every minute
-schedule.every(1).day.do(etl)
+schedule.every(1).day.at("15:15").do(etl)
 if __name__ == "__main__":
     while True:
         schedule.run_pending()
