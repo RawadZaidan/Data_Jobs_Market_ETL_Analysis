@@ -73,6 +73,10 @@
 
 <img  src="./readme/DB_Tables.png"  id="prototyping"/>
 
+### Data Flow Diagram
+
+<img  src="./readme/pipeline.png"  id="prototyping"/>
+
 
 
 <br><br>
