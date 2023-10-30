@@ -98,7 +98,7 @@ def find_technologies_in_string(input_string):
     try:
         input_string = input_string.lower()
         techs = ["python", "sql", "r", "scala", "tableau", "power_bi", "mysql", "postgresql", "nosql", "etl", "dax", "aws", "azure","remote","hybrid","on_site","junior", "mid", "senior"]
-        tech_found = {tech: tech in input_string for tech in techs}
+        tech_found = {tech: tech.replace('_', ' ').lower() in input_string for tech in techs}
         return tech_found
     except:
         tech_found = {tech: False for tech in techs}
