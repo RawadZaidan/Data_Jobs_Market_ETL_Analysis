@@ -102,6 +102,7 @@ A central dashboard where viewers can view:
 
 Power BI Report Screenshots
 
+![VID](readme/video.mp4)
 ![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)
 
 ## Backend
