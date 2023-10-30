@@ -20,10 +20,8 @@ def concat_dfs(*dfs):
     df_concatenated = pd.concat(dfs, ignore_index=True)
     return df_concatenated
 
-def read_csv_files_from_drive(url):
-    file_id = url.split("/")[-2]
-    reading_link = f"https://drive.google.com/uc?id={file_id}"
-    df = pd.read_csv(reading_link)
+def read_csv_files_from_github(url):
+    df = pd.read_csv(url)
     return df
 
 def remove_spaces_from_columns_df(df):
@@ -75,9 +73,9 @@ def concat_dfs(*args):
 def read_geomap_df_from_drive():
     try:
         list_of_csvs = DRIVE_CSVS.geomap.value
-        df1 = read_csv_files_from_drive(list_of_csvs[0])
-        df2 = read_csv_files_from_drive(list_of_csvs[1])
-        df3 = read_csv_files_from_drive(list_of_csvs[2])
+        df1 = read_csv_files_from_github(list_of_csvs[0])
+        df2 = read_csv_files_from_github(list_of_csvs[1])
+        df3 = read_csv_files_from_github(list_of_csvs[2])
 
         df_merged = df1.merge(df2, on='Country',how='outer').merge(df3, on='Country',how='outer')
         df_merged.fillna(0, inplace=True)
@@ -99,7 +97,7 @@ def fix_posting_date(date):
 def return_concatenated_df_from_drive(lookup_list_of_urls): 
     dfs = []
     for link in lookup_list_of_urls:
-        df = read_csv_files_from_drive(link)
+        df = read_csv_files_from_github(link)
         dfs.append(df)
     final = pd.concat(dfs, ignore_index=True)
     return final 

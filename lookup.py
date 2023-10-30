@@ -124,23 +124,23 @@ class nakuri_get_info(Enum):
 #--------------- Drive csvs links lists ---------------#
 
 class DRIVE_CSVS(Enum):
-    geomap = ['https://drive.google.com/file/d/1gm5JFUIjbumHKarRJQc6twJVnlPWGvhJ/view?usp=drive_link',
-              'https://drive.google.com/file/d/11yJRl39fs2PRwap9oRBoUuR5iPuT-rbu/view?usp=drive_link',
-              'https://drive.google.com/file/d/1Ei6eUEhPk8jncy09RWuRU9Zb-dslZqmY/view?usp=drive_link']
+    geomap = ['https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/A_E_S_geoMap/geoMap_DA.csv',
+              'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/A_E_S_geoMap/geoMap_DE.csv',
+              'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/A_E_S_geoMap/geoMap_DS.csv']
     
-    company_info = ['https://drive.google.com/file/d/1cnH7hmQEneOIYR8QoT7AstSEqptd-zdo/view?usp=drive_link',
-                    'https://drive.google.com/file/d/1XqRTnyMWhws6yGnyuCN7DvPMVl5vIgWS/view?usp=drive_link']
+    company_info = ['https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/company_info/glassdoor_comp.csv',
+                    'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/company_info/linkedin_comp.csv']
     
-    comparison = ['https://drive.google.com/file/d/13HeEB7AtaZhPZXx3mxp2q864fh8bhW9R/view?usp=drive_link',
-                    'https://drive.google.com/file/d/1Y41v0unHa70pYKZxSmkymed5Difhp9rY/view?usp=drive_link',
-                    'https://drive.google.com/file/d/1QPP2UAupym0PLR1sSZda4FX8ztxtIlwW/view?usp=drive_link']
+    comparison = ['https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/analyst_engineer_scientist/DataAnalyst.csv',
+                    'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/analyst_engineer_scientist/DataEngineer.csv',
+                    'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/analyst_engineer_scientist/DataScientist.csv']
     
-    interest_timeline = ['https://drive.google.com/file/d/1cSpgj75PTg6P21KY2-yDJumH1O1bBw1Z/view?usp=drive_link']
+    interest_timeline = ['https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/interest_timeline/interest_timeline.csv']
 
-    job_details = ['https://drive.google.com/file/d/1TAF1NKzmlAPc44MrJZ1NzFxaY097MV-V/view?usp=drive_link',
-                   'https://drive.google.com/file/d/1R6XdrnEU9KsEAy-wuYjlmjrt8Hk55TAO/view?usp=drive_link',
-                   'https://drive.google.com/file/d/1H9Nys7uQn4evF08xBDtOIMC4wwSkVjVJ/view?usp=drive_link']
+    job_details = ['https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/job_details/glassdoor_ind.csv',
+                   'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/job_details/linkedin_ind.csv',
+                   'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/job_details/naukri_ind.csv']
     
-    postings = ['https://drive.google.com/file/d/1SMGHnUbzSrDWSRx7eBY_7sdIOfSX2BRm/view?usp=drive_link',
-            'https://drive.google.com/file/d/136uW7mZq50L9pb-yqe0qhs7fQFj0dpr0/view?usp=drive_link',
-            'https://drive.google.com/file/d/1Rp_VV_Xpn7DpjhH4583M3Gv-EnuMbB6B/view?usp=drive_link']
+    postings = ['https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/jobs/glassdoor.csv',
+            'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/jobs/linkedin.csv',
+            'https://raw.githubusercontent.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/main/local_csvs/jobs/naukri.csv']
