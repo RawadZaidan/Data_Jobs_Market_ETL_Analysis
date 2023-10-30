@@ -1,6 +1,6 @@
 -- Alter before runs 
 
-ALTER TABLE stg_production.stg_comparison
+ALTER TABLE dw_reporting.stg_comparison
 ADD COLUMN IF NOT EXISTS id SERIAL PRIMARY KEY;
 
 --------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ SELECT DISTINCT ON (c.company_id)
     c.industry, 
     c.size, 
     c.direct_link 
-FROM stg_production.stg_companies AS c
+FROM dw_reporting.stg_companies AS c
 ON CONFLICT (company_id)
 DO UPDATE 
 SET 
@@ -58,8 +58,8 @@ SELECT
     s.company_name,
 	p.link,
     s.description 
-FROM stg_production.stg_details AS s
-INNER JOIN stg_production.stg_postings AS p
+FROM dw_reporting.stg_details AS s
+INNER JOIN dw_reporting.stg_postings AS p
 ON s.id = p.id
 ON CONFLICT (id)
 DO UPDATE SET 
@@ -101,7 +101,7 @@ SELECT DISTINCT ON (s.id)
 	s.revenue, 
 	s.tag, 
 	s.job_description
-FROM stg_production.stg_comparison AS s
+FROM dw_reporting.stg_comparison AS s
 ON CONFLICT (id)
 DO UPDATE SET 
     company_name = excluded.company_name,
@@ -175,8 +175,8 @@ SELECT DISTINCT ON (s.id)
     s.junior,
     s.mid,
     s.senior
-FROM stg_production.stg_details AS s
-INNER JOIN stg_production.stg_postings AS p
+FROM dw_reporting.stg_details AS s
+INNER JOIN dw_reporting.stg_postings AS p
 ON s.id = p.id
 ON CONFLICT (id)
 DO UPDATE SET
@@ -229,15 +229,15 @@ END;
 
 -- Fact Geomap
 
-UPDATE stg_production.stg_geomap_interest
+UPDATE dw_reporting.stg_geomap_interest
 SET data_analyst = REPLACE(data_analyst, 'No-Data', '0')
 WHERE data_analyst LIKE '%No-Data%';
 
-UPDATE stg_production.stg_geomap_interest
+UPDATE dw_reporting.stg_geomap_interest
 SET data_science = REPLACE(data_science, 'No-Data', '0')
 WHERE data_science LIKE '%No-Data%';
 
-UPDATE stg_production.stg_geomap_interest
+UPDATE dw_reporting.stg_geomap_interest
 SET data_engineer = REPLACE(data_engineer, 'No-Data', '0')
 WHERE data_engineer LIKE '%No-Data%';
 
@@ -253,7 +253,7 @@ SELECT DISTINCT ON (country) country,
 	ROUND(data_analyst::NUMERIC)::INT AS data_analysis,
 	ROUND(data_science::NUMERIC)::INT AS data_science,
 	ROUND(data_engineer::NUMERIC)::INT AS data_engineering
-FROM stg_production.stg_geomap_interest
+FROM dw_reporting.stg_geomap_interest
 ON CONFLICT (country) DO UPDATE
 SET
     data_analyst = excluded.data_analyst,
@@ -278,7 +278,7 @@ CREATE TABLE IF NOT EXISTS production.fact_comparison (
 CREATE INDEX IF NOT EXISTS idx_id ON production.fact_comparison(id);
 INSERT INTO production.fact_comparison (id, job_title, lower_salary, higher_salary, company_name, rating, size, founded, revenue, tag)
 SELECT DISTINCT ON (id) id, job_title, lower_salary, higher_salary, company_name, rating, size, founded, revenue, tag
-FROM stg_production.stg_comparison
+FROM dw_reporting.stg_comparison
 ON CONFLICT (id) DO UPDATE
 SET
     job_title = excluded.job_title,
@@ -306,7 +306,7 @@ SELECT  DISTINCT ON (Date(week)) DATE(week),
         CAST(data_analyst AS INT), 
         CAST(data_scientist AS INT), 
         CAST(data_engineer AS INT)
-FROM stg_production.stg_comparison_timeline
+FROM dw_reporting.stg_comparison_timeline
 ON CONFLICT (week) DO UPDATE
 SET
     data_analyst = excluded.data_analyst,

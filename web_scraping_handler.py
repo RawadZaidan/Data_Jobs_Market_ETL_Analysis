@@ -316,11 +316,11 @@ def nakuri_get_date(t):
             elif t[2] == 'ago':
                 days_ago = int(t[0])
                 date_o = current_date - timedelta(days=days_ago)
-                date_o = date_o.strftime("%d-%m-%Y")
+                date_o = date_o.strftime("%Y-%m-%d")
                 return date_o
         elif len(t) == 2:
             if t[-1] == 'Today':
-                date_o = current_date.strftime("%d-%m-%Y")
+                date_o = current_date.strftime("%Y-%m-%d")
                 return date_o
             else:
                 return 'ERROR'
@@ -555,7 +555,7 @@ def glassdoor_return_time(job_date):
             date_of_job = now - timedelta(days=int(job_date[:-1]))
         elif job_date[-1:] == 'h':
             date_of_job = now - timedelta(days=1)
-        date_of_job = date_of_job.strftime("%d-%m-%Y")
+        date_of_job = date_of_job.strftime("%Y-%m-%d")
     except:
         return date_of_job
     return date_of_job
@@ -660,10 +660,11 @@ def glassdoor_get_id(x):
 
 def glassdoor_cleaning_functions(df):
     try:
-        df['posting_date'] = df['posting_date'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
+        today_date = datetime.now().date()
+        formatted_date = today_date.strftime("%Y-%m-%d")
+        df['posting_date'] = df['posting_date'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else formatted_date)
         df['link'] = df['link'].apply(lambda x: x[0] if isinstance(x, list) and len(x) > 0 else 'N/A')
         df['posting_date'] = df['posting_date'].apply(glassdoor_return_time)
-        df['posting_date'] = df['posting_date'].apply(lambda x: x.replace('-', '/'))
         df['company'] = df['company'].apply(glassdoor_clean_company_name)
         df['ID'] = df['link'].apply(glassdoor_get_id)
         return df
