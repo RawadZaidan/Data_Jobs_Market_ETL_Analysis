@@ -229,18 +229,6 @@ END;
 
 -- Fact Geomap
 
-UPDATE dw_reporting.stg_geomap_interest
-SET data_analyst = REPLACE(data_analyst, 'No-Data', '0')
-WHERE data_analyst LIKE '%No-Data%';
-
-UPDATE dw_reporting.stg_geomap_interest
-SET data_science = REPLACE(data_science, 'No-Data', '0')
-WHERE data_science LIKE '%No-Data%';
-
-UPDATE dw_reporting.stg_geomap_interest
-SET data_engineer = REPLACE(data_engineer, 'No-Data', '0')
-WHERE data_engineer LIKE '%No-Data%';
-
 CREATE TABLE IF NOT EXISTS production.fact_geomap_interest (
     country TEXT PRIMARY KEY,
     data_analyst INT,

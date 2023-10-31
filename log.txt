@@ -3997,4 +3997,11 @@
 2023-10-30 14:19:14 DEBUG Remote response: status=404 | data={"value":{"error":"no such element","message":"no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//*[@id=\"MainContent\"]/div[1]/div/ul/li[1]/a\"}\n  (Session info: chrome=118.0.5993.118)","stacktrace":"\tGetHandleVerifier [0x00744DE3+43907]\n\t(No symbol) [0x006D0741]\n\t(No symbol) [0x005C33ED]\n\t(No symbol) [0x005F6760]\n\t(No symbol) [0x005F6C2B]\n\t(No symbol) [0x00626F62]\n\t(No symbol) [0x00612BA4]\n\t(No symbol) [0x006255CA]\n\t(No symbol) [0x00612956]\n\t(No symbol) [0x005EE17E]\n\t(No symbol) [0x005EF32D]\n\tGetHandleVerifier [0x009F5AF9+2865305]\n\tGetHandleVerifier [0x00A3E78B+3163435]\n\tGetHandleVerifier [0x00A38441+3138017]\n\tGetHandleVerifier [0x007CE0F0+605840]\n\t(No symbol) [0x006DA64C]\n\t(No symbol) [0x006D6638]\n\t(No symbol) [0x006D675F]\n\t(No symbol) [0x006C8DB7]\n\tBaseThreadInitThunk [0x75DB7BA9+25]\n\tRtlInitializeExceptionChain [0x7733BD3B+107]\n\tRtlClearBits [0x7733BCBF+191]\n"}} | headers=HTTPHeaderDict({'Content-Length': '955', 'Content-Type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
 2023-10-30 14:19:14 DEBUG Finished Request
 2023-10-30 14:19:16 INFO This is an info message: Hook - Got all Dfs of today
-2023-10-30 14:19:16 INFO This is an info message: Hook - Cleaned Dfs of today
+2023-10-30 14:19:16 INFO This is an info message: Hook - Cleaned Dfs of today2023-10-31 00:53:36 INFO Pre_Hook: SQL folder executed
+2023-10-31 00:54:22 INFO Pre_Hook: Df:companies is done.
+2023-10-31 00:54:22 INFO Pre_Hook: Df:postings is done.
+2023-10-31 00:54:23 INFO Pre_Hook: Df:details is done.
+2023-10-31 00:54:30 INFO Pre_Hook: Df:comparison is done.
+2023-10-31 00:54:30 INFO Pre_Hook: Df:geomap_interest is done.
+2023-10-31 00:54:30 INFO Pre_Hook: Df:comparison_timeline is done.
+2023-10-31 00:54:30 INFO Pre_Hook: CSVs read and uploaded to database

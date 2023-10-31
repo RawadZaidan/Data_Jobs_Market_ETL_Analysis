@@ -11,7 +11,7 @@ import os
 def logging_main() -> None:
     logging.basicConfig(
         level=logging.DEBUG,
-        format="%(asctime)s %(levelname)s %(message)s",  # Fix the typo here
+        format="%(asctime)s %(levelname)s %(message)s", 
         datefmt="%Y-%m-%d %H:%M:%S",
         filename="log.txt"
     )

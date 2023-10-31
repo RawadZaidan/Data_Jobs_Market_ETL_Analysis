@@ -135,6 +135,10 @@ def upload_after_etl_check(db_session):
 
 def hook():
     try:
+        logging.info('Hook - Start')
+
+        logging_main()
+
         db_session = create_connection()
         logging.info('Hook - Created DB_SESSION')
 
