@@ -16,9 +16,9 @@
 <a  name="philosophy" ></a>
 <img  src="./readme/title2.svg" id="project-philosophy"/>
 
-> A python based ETL project that would extract, transform data from different web sources and load them into a tabular database (PostgreSQL) in an attempt to provide a full scope analytical understanding of the Data Job market. 
+> A Python based ETL project that would extract, transform data from different web sources and load them into a tabular database (PostgreSQL) in an attempt to provide a full scope analytical understanding of the Data Job market. 
 
->The project also provides day-to-day jobs from Linkedin-Glassdoor-NaukriGulf with all the skills requried, their description and application link basedo n user filters (Python, SQL, AWS, Azure, Junior, Mid, Senior levels, etc...)
+>The project also provides day-to-day jobs from Linkedin-Glassdoor-NaukriGulf with all the skills requried, their description and application link based on user filters (Python, SQL, AWS, Azure, Junior, Mid, Senior levels, etc...)
 <br>
 
   
@@ -96,7 +96,7 @@ Interactive PowerBI Dashboard:
 A central dashboard where viewers can view:
 
 1. Job Indicators: Graphs, charts and visualizations displaying key job requirements/quality metrics over time and titles.
-2. Interactive filters: options to filter data by date, skills, or specific filters for customized job searches.
+2. Interactive filters: Options to filter data by date, skills, or specific filters for customized job searches.
 3. Ease of navigation: This report allows for a seamless navigation between different sections.
 <br>
 
@@ -113,7 +113,7 @@ https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/assets/119298940/b8
 ## Backend
 
 1. Web scraping & Automation using Selenium, Beautiful Soup and Requests libraries
-2. ETL Pipeline: using python and pandas, raw data is extracted, transformed into a usable format and loaded into postgreSQL database.
+2. ETL Pipeline: Using Python and Pandas, raw data is extracted, transformed into a usable format and loaded into postgreSQL database.
 3. Database: Schema Design - Indexing - Data Integrity - Backup & Recovery.
 
 <br>
