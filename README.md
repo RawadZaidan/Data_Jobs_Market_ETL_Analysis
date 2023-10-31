@@ -102,10 +102,8 @@ A central dashboard where viewers can view:
 
 Power BI Report Preview
 
-![video](https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/assets/119298940/3c322bea-540b-40cb-9038-c585e10318f9)
 
-![VID](readme/lapse.gif)
-![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png)
+![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png) ![VID](readme/lapse.gif)
 
 ## Backend
 
