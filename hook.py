@@ -134,7 +134,6 @@ def upload_after_etl_check(db_session):
 # Final steps: piecing everything together
 
 def hook():
-    try:
         logging.info('Hook - Start')
 
         db_session = create_connection()
@@ -142,7 +141,3 @@ def hook():
 
         upload_after_etl_check(db_session)
         logging.info('Hook - Done')
-    except Exception as error:
-        suffix = str(error)
-        error_prefix = ErrorHandling.HOOK_ERROR.value
-        show_error_message(error_prefix.value, suffix)
