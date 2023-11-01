@@ -4,7 +4,7 @@
 <div>
 
 > Hello world! This is the project’s summary that describes the project, plain and simple, limited to the space available.
-**[PROJECT PHILOSOPHY](#project-philosophy) • [PROTOTYPING](#prototyping) • [TECH STACKS](#stacks) • [IMPLEMENTATION](#demo) • [HOW TO RUN?](#run)**
+**[PROJECT PHILOSOPHY](#project-philosophy) • [PROTOTYPING](#prototyping) • [TECH STACKS](#stack) • [IMPLEMENTATION](#demo) • [HOW TO RUN?](#run)**
 
 </div> 
   
@@ -34,8 +34,6 @@
   
 
 <br>
-
-  
 
 ### User Stories
 
@@ -81,23 +79,22 @@
 
 <br><br>
 
+> ETL performance - Logger view
+
   
+### Time for each run
+
+ ![Landing](./readme/logger1.png) | ![fsdaf](./readme/logger2.png) |
+
+On average, every ETL run takes around 20-30 minutes (also depends on internet speed)
 
 <!-- Tech stacks -->
 
-<a  name="stacks"></a>
-<img  src="./readme/title4.svg" id="stacks" />
+<a  name="implementation"></a>
+<img  src="./readme/title4.svg" id="implementation" />
 
 <br>
 
-## Frontend
-
-Interactive PowerBI Dashboard:
-A central dashboard where viewers can view:
-
-1. Job Indicators: Graphs, charts and visualizations displaying key job requirements/quality metrics over time and titles.
-2. Interactive filters: Options to filter data by date, skills, or specific filters for customized job searches.
-3. Ease of navigation: This report allows for a seamless navigation between different sections.
 <br>
 
 Power BI Report Preview
@@ -110,37 +107,39 @@ https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis/assets/119298940/b8
 
 ![Map](readme/pb1.png)| ![Map](readme/pb2.png)| ![Map](readme/pb3.png)| ![Map](readme/pb4.png)| ![Map](readme/pb5.png)| ![Map](readme/pb6.png) ![VID](readme/lapse.gif)
 
+
+<br>
+
+<br>
+
+  
+
+<!-- stacks -->
+
+<a  name="stacks"  ></a>
+<img  src="./readme/title5.svg" id="#stack"/>
+
+## Frontend
+
+Interactive PowerBI Dashboard:
+A central dashboard where viewers can view:
+
+1. Job Indicators: Graphs, charts and visualizations displaying key job requirements/quality metrics over time and titles.
+2. Interactive filters: Options to filter data by date, skills, or specific filters for customized job searches.
+3. Ease of navigation: This report allows for a seamless navigation between different sections.
+
 ## Backend
 
 1. Web scraping & Automation using Selenium, Beautiful Soup and Requests libraries
 2. ETL Pipeline: Using Python and Pandas, raw data is extracted, transformed into a usable format and loaded into postgreSQL database.
 3. Database: Schema Design - Indexing - Data Integrity - Backup & Recovery.
 
-<br>
-
-<br>
-
-  
-
-<!-- Implementation -->
-
-<a  name="Demo"  ></a>
-<img  src="./readme/title5.svg" id="#demo"/>
->Tech stacks used:
 
  - Python
  - SQL
  - DAX
  - PowerQuery
 
-> ETL performance - Logger view
-
-  
-### Time for each run
-
- ![Landing](./readme/logger1.png) | ![fsdaf](./readme/logger2.png) |
-
-On average, every ETL run takes around 20-30 minutes (also depends on internet speed)
 <!-- How to run -->
 
 <a  name="run"  ></a>
@@ -187,6 +186,5 @@ git clone https://github.com/RawadZaidan/Data_Jobs_Market_ETL_Analysis.git
 **Start the Data Ingestion & ETL Process**:
 `python main_handler.py`
 
-You should be able to check the screenshots file to see the ETL work and its timing .
 
 [Link to PowerBI dashboard](https://app.powerbi.com/view?r=eyJrIjoiZjQ2NmIwZTgtMjhiMy00NmNhLThkMGYtOTkzMjM1ZjEwZTQ5IiwidCI6IjJhZDk2OTM0LTQzZTUtNDFjMi05NzYxLWYzMzVmZTIxNGNjMyIsImMiOjl9)
